@@ -1,0 +1,33 @@
+# Django #
+*.log
+*.pot
+*.pyc
+_pycache_
+db.sqlite3
+media
+product
+brand
+# Backup files #
+*.bak
+
+
+# Environments
+.env
+env
+venv
+assets-src
+
+# Sublime Text #
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+*.sublime-project
+
+#pycharm
+.idea
+
+**/.DS_Store
+migration_script.py
+qodana.yaml
+response.json
