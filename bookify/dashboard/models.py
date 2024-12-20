@@ -43,7 +43,7 @@ class MyUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-    def get_file_path(instance, filename):
+    def get_file_path(self, instance, filename):
         ext = filename.split('.')[-1]
         tmp = get_random_string()
         filename = "%s.%s" % (tmp, ext)
