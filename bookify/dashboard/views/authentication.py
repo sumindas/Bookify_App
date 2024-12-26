@@ -8,8 +8,8 @@ from datetime import datetime
 
 
 def login(request):
-    if 'username' in request.session:
-        return redirect('dashboard-home')
+    # if 'username' in request.session:
+    #     return redirect('dashboard-home')
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -27,7 +27,7 @@ def login(request):
         else:
             messages.error(request, 'Invalid username or password!')
             return redirect('dashboard-login')
-    return render(request, "webpages/login.html")
+    return render(request, "dashboard/webpages/login.html")
     
     
 
@@ -38,6 +38,7 @@ def home(request):
         return redirect("dashboard-login")
     else:
         current_hour = datetime.now().hour
+        print(current_hour)
         if 5 <= current_hour < 12:
             greeting = "Good Morning"
         elif 12 <= current_hour < 18:
@@ -52,4 +53,4 @@ def home(request):
             'greeting': greeting,
             'is_superuser': request.user.is_superuser
         }
-        return render(request, "webpages/home.html", context)
+        return render(request, "dashboard/webpages/index.html", context)

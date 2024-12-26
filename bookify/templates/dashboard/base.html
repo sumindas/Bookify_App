@@ -1,0 +1,115 @@
+{% load static %}
+<!doctype html>
+<html lang="en" data-layout="vertical" data-sidebar="dark" data-sidebar-size="lg" data-topbar="light" data-layout-style="default" data-layout-mode="light" data-layout-width="fluid" data-layout-position="fixed">
+
+<head>
+
+    <meta charset="utf-8"/>
+    <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description"/>
+    <meta content="Themesbrand" name="author"/>
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="{% static 'dashboard/assets/images/favicon.ico' %}">
+
+    <!-- jsvectormap css -->
+
+
+
+    {% block css %}{% endblock css %}
+    <!-- Layout config Js -->
+    <script src="{% static 'dashboard/assets/js/layout.js' %}"></script>
+    <!-- Bootstrap Css -->
+    <link href="{% static 'dashboard/assets/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css"/>
+    <!-- Icons Css -->
+    <link href="{% static 'dashboard/assets/css/icons.min.css' %}" rel="stylesheet" type="text/css"/>
+    <!-- App Css-->
+    <link href="{% static 'dashboard/assets/css/app.min.css' %}" rel="stylesheet" type="text/css"/>
+    <!-- custom Css-->
+    <link href="{% static 'dashboard/assets/css/custom.min.css' %}" rel="stylesheet" type="text/css"/>
+
+    {% block style %}{% endblock style %}
+</head>
+
+<body>
+
+<div id="layout-wrapper">
+    {% include 'dashboard/includes/navigation/top_nav.html' %}
+    {% include 'dashboard/includes/navigation/side_bar.html' %}
+    <div class="vertical-overlay"></div>
+    <div class="main-content">
+
+        {% block content %}
+        {% include 'dashboard/includes/loading_toast/toast.html' %}
+        {% endblock content %}
+
+        {% include 'dashboard/includes/navigation/footer.html' %}
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'alert-success' %}
+                    <!-- Toast -->
+                    <div data-toast data-toast-text="{{ message }}"
+                         data-toast-gravity="top" data-toast-position="right"
+                         data-toast-className="success rounded px-4 py-3"
+                         data-toast-duration="2500"
+                         class="noty-tost d-none rounded shadow bg-success"></div>
+                {% endif %}
+                {% if message.tags == 'alert-danger' %}
+                    <!-- Toast -->
+                    <div data-toast data-toast-text="{{ message }}"
+                         data-toast-gravity="top" data-toast-position="right"
+                         data-toast-className="danger rounded px-4 py-3"
+                         data-toast-duration="10000"
+                         class="noty-tost d-none rounded shadow bg-danger"></div>
+                {% endif %}
+                {% if message.tags == 'warning' %}
+                    <!-- Toast -->
+                    <div data-toast data-toast-text="{{ message }}"
+                         data-toast-gravity="top" data-toast-position="right"
+                         data-toast-className="warning rounded px-4 py-3"
+                         data-toast-duration="2500"
+                         class="noty-tost d-none rounded shadow bg-warning"></div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+<!-- JAVASCRIPT -->
+<script src="{% static 'dashboard/assets/libs/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/libs/simplebar/simplebar.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/libs/node-waves/waves.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/libs/feather-icons/feather.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/pages/plugins/lord-icon-2.1.0.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/plugins.js' %}"></script>
+
+{% block js %}{% endblock js %}
+
+
+<!-- notifications init -->
+<script src="{% static 'dashboard/assets/js/pages/notifications.init.js' %}"></script>
+
+<!-- Vector map-->
+<script src="{% static 'dashboard/assets/libs/jsvectormap/js/jsvectormap.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/libs/jsvectormap/maps/world-merc.js' %}"></script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
+
+<!--Swiper slider js-->
+<script src="{% static 'dashboard/assets/libs/swiper/swiper-bundle.min.js' %}"></script>
+
+
+<!-- App js -->
+<script src="{% static 'dashboard/assets/js/app.js' %}"></script>
+
+{% block script %}{% endblock script %}
+<script>
+    $(document).ready(function () {
+        $('.noty-tost').click()
+    });
+</script>
+</body>
+
+</html>

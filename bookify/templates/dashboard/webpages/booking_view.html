@@ -1,0 +1,205 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block css %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
+    <link href="{% static 'dashboard/assets/libs/sweetalert2/sweetalert2.min.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'dashboard/assets/libs/swiper/swiper-bundle.min.css' %}" rel="stylesheet" type="text/css"/>
+{% endblock css %}
+
+{% block style %}
+    <style>
+        .booking-details-card {
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border: none;
+            border-radius: 0.5rem;
+        }
+        .booking-details-card .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .booking-info-item {
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .booking-info-item:last-child {
+            border-bottom: none;
+        }
+        .booking-info-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        .booking-info-value {
+            color: #6c757d;
+        }
+        .service-list-item {
+            background-color: #f8f9fa;
+        }
+        .status-badge {
+            font-size: 0.875rem;
+            padding: 0.5em 0.75em;
+        }
+    </style>
+{% endblock style %}
+
+{% block content %}
+    <div class="page-content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                        <h4 class="mb-sm-0">Booking Details</h4>
+                        <div class="page-title-right">
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item"><a href="">Dashboard</a></li>
+                                <li class="breadcrumb-item active">Booking Details</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card booking-details-card">
+                        <div class="card-header">
+                            <h4 class="card-title mb-0">Booking Information - #{{ booking.id }}</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="booking-info-item">
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <p class="booking-info-label mb-0">User</p>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <p class="booking-info-value mb-0">{{ booking.user.name }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="booking-info-item">
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <p class="booking-info-label mb-0"> Space</p>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <p class="booking-info-value mb-0">{{ booking.space.name }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="booking-info-item">
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <p class="booking-info-label mb-0">Date</p>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <p class="booking-info-value mb-0">{{ booking.date|date:"F d, Y" }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="booking-info-item">
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <p class="booking-info-label mb-0">Time Slot</p>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <p class="booking-info-value mb-0">{{ booking.time_slot.start_time|time:"H:i" }} - {{ booking.time_slot.end_time|time:"H:i" }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="booking-info-item">
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <p class="booking-info-label mb-0">Booking Type</p>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <p class="booking-info-value mb-0">{{ booking.get_booking_type_display }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="booking-info-item">
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <p class="booking-info-label mb-0">Status</p>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <span class="badge status-badge bg-{{ booking.status|yesno:'success,danger' }}">{{ booking.get_status_display }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="booking-info-item">
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <p class="booking-info-label mb-0">Total Amount</p>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <p class="booking-info-value mb-0">₹ {{ booking.total|floatformat:2 }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="booking-info-item">
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <p class="booking-info-label mb-0">Paid Amount</p>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <p class="booking-info-value mb-0">₹ {{ booking.paid_amount|floatformat:2 }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+        
+                            {% if booking.services.exists %}
+                            <div class="mt-4">
+                                <h5 class="fw-semibold">Booked Services</h5>
+                                <ul class="list-group">
+                                    {% for service in booking.services.all %}
+                                    <li class="list-group-item service-list-item d-flex justify-content-between align-items-center">
+                                        {{ service.title }}
+                                        <span class="badge bg-primary rounded-pill">₹ {{ service.cost|floatformat:2 }}</span>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% endif %}
+        
+                            {% if booking.address %}
+                            <div class="mt-4">
+                                <h5 class="fw-semibold">Address</h5>
+                                <p class="booking-info-value">{{ booking.address }}</p>
+                            </div>
+                            {% endif %}
+        
+                            {% if booking.used_coupon_code %}
+                            <div class="mt-4">
+                                <h5 class="fw-semibold">Used Coupon Code</h5>
+                                <p class="booking-info-value">{{ booking.used_coupon_code }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block js %}
+    <script src="{% static 'dashboard/assets/libs/sweetalert2/sweetalert2.min.js' %}"></script>
+    <script src="{% static 'dashboard/assets/libs/apexcharts/apexcharts.min.js' %}"></script>
+    <script src="{% static 'dashboard/assets/js/pages/modal.init.js' %}"></script>
+{% endblock js %}
+
+{% block script %}
+    <script>
+        $(function () {
+            // Your existing JavaScript code here
+        });
+    </script>
+{% endblock script %}

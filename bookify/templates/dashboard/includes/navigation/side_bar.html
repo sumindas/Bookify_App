@@ -1,0 +1,97 @@
+{% load static %}
+<div class="app-menu navbar-menu">
+    <!-- LOGO -->
+    <div class="navbar-brand-box">
+        <!-- Dark Logo-->
+        <a href="#" class="logo logo-light">
+					<span class="logo-sm">
+						<img src="" alt="" height="22">
+					</span>
+            <span class="logo-lg">
+						<img src="" alt="" height="22">
+					</span>
+        </a>
+        <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover"
+                id="vertical-hover">
+            <i class="ri-record-circle-line"></i>
+        </button>
+    </div>
+
+    <div id="scrollbar">
+        <div class="container-fluid">
+
+            <div id="two-column-menu">
+            </div>
+
+            <ul class="navbar-nav" id="navbar-nav">
+
+                <li class="menu-title"><span data-key="t-dashboard">Dashboard</span></li>
+
+                {% if request.user.user_type == 1 %}
+
+                <li class="nav-item">
+                    <a class="nav-link menu-link {% if request.path == "/" %}active{% endif %}"
+                       href="{% url 'dashboard-home' %}">
+                        <i class="mdi mdi-home"></i> <span data-key="t-dashboard">Home</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link {% if request.path == "/user_manager/" %}active{% endif %} "
+                       href="">
+                        <i class="mdi mdi-account"></i> <span data-key="t-space">Manage Users</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link {% if request.path == "/manage_booking/" %}active{% endif %} "
+                       href="">
+                        <i class="mdi mdi-cash"></i> <span data-key="t-space">Manage Booking</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link {% if request.path == "/manage_space/" %}active{% endif %} "
+                       href="">
+                        <i class="mdi mdi-car"></i> <span data-key="t-space">Manage Services</span>
+                    </a>
+                </li>
+                {% comment %} <li class="nav-item">
+                    <a class="nav-link menu-link {% if request.path == "/manage_featured_space/" %}active{% endif %} "
+                       href="">
+                        <i class="mdi mdi-car"></i> <span data-key="t-space">Featured Space</span>
+                    </a>
+                </li> {% endcomment %}
+                <li class="nav-item">
+                    <a class="nav-link menu-link {% if "banner" in request.path %}active{% endif %} "
+                       href="">
+                        <i class="mdi mdi-image"></i> <span data-key="t-banner">Manage Banner</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link {% if "general" in request.path %}active{% endif %} "
+                       href="">
+                        <i class="mdi mdi-folder"></i> <span data-key="t-banner">Manage Generals</span>
+                    </a>
+                </li>
+                 {% comment %} <li class="nav-item">
+                    <a class="nav-link menu-link {% if request.path == "/approve_spaces/" %}active{% endif %} "
+                       href="{% url 'dashboard-approve-spaces' %}">
+                        <i class="mdi mdi-car"></i> <span data-key="t-space">Approve Spaces</span>
+                    </a>
+                </li>  {% endcomment %}
+
+                {% endif %}
+
+                {% if request.user.user_type == 2 %}
+
+                <li class="nav-item">
+                    <a class="nav-link menu-link {% if request.path == "/pending_spaces/" %}active{% endif %} "
+                       href="">
+                        <i class="mdi mdi-car"></i> <span data-key="t-space">Pending Spaces</span>
+                    </a>
+                </li>
+
+                {% endif %}
+            </ul>
+        </div>
+        <!-- Sidebar -->
+    </div>
+</div>

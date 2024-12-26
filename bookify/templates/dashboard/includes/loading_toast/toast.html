@@ -1,0 +1,126 @@
+<div id="loadingToast" class="loading-toast">
+    <div class="loading-content">
+        <div class="spinner"></div>
+        <span class="loading-message">Processing...</span>
+    </div>
+</div>
+
+<style>
+.loading-toast {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    z-index: 9999;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.loading-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.loading-message {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid #ffffff;
+    border-top: 3px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Optional overlay background */
+.loading-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+}
+</style>
+
+<script>
+// Loading Toast Controller
+const LoadingToast = {
+    element: null,
+    overlay: null,
+    
+    init() {
+        this.element = document.getElementById('loadingToast');
+        
+        // Create overlay if needed
+        this.overlay = document.createElement('div');
+        this.overlay.className = 'loading-overlay';
+        document.body.appendChild(this.overlay);
+    },
+    
+    show(message = 'Processing...') {
+        if (!this.element) this.init();
+        this.element.querySelector('.loading-message').textContent = message;
+        this.element.style.display = 'block';
+        this.overlay.style.display = 'block';
+        document.body.style.overflow = 'hidden'; // Prevent scrolling
+    },
+    
+    hide() {
+        if (!this.element) return;
+        this.element.style.display = 'none';
+        this.overlay.style.display = 'none';
+        document.body.style.overflow = ''; // Restore scrolling
+    },
+    
+    // Utility method to show loading during fetch requests
+    async fetch(url, options = {}) {
+        this.show();
+        try {
+            const response = await fetch(url, options);
+            const data = await response.json();
+            return data;
+        } finally {
+            this.hide();
+        }
+    }
+};
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => LoadingToast.init());
+
+// Optional: Add global AJAX loading indicator
+document.addEventListener('DOMContentLoaded', () => {
+    let activeRequests = 0;
+    
+    const incrementRequests = () => {
+        activeRequests++;
+        if (activeRequests === 1) LoadingToast.show();
+    };
+    
+    const decrementRequests = () => {
+        activeRequests--;
+        if (activeRequests === 0) LoadingToast.hide();
+    };
+    
+    // Add global AJAX event handlers
+    $(document).ajaxSend(() => incrementRequests());
+    $(document).ajaxComplete(() => decrementRequests());
+    $(document).ajaxError(() => decrementRequests());
+});
+</script>

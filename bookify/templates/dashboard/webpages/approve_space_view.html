@@ -1,0 +1,1072 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+
+{% block css %}
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
+    <!-- Sweet Alert css-->
+    <link href="{% static 'dashboard/assets/libs/sweetalert2/sweetalert2.min.css' %}" rel="stylesheet" type="text/css"/>
+    <!--Swiper slider css-->
+    <link href="{% static 'dashboard/assets/libs/swiper/swiper-bundle.min.css' %}" rel="stylesheet" type="text/css"/>
+
+{% endblock css %}
+
+{% block style %}
+    <style>
+        .form-group {
+            margin-top: 1rem;
+        }
+    </style>
+{% endblock style %}
+
+
+{% block content %}
+
+    <div class="page-content">
+        <div class="container-fluid">
+            <div class="profile-foreground position-relative mx-n4 mt-n4">
+                <div class="profile-wid-bg">
+                    <img src="{% static 'images/parking.png' %}" alt="" class="profile-wid-img"/>
+                </div>
+            </div>
+            <div class="pt-4 mb-4 mb-lg-3 pb-lg-4">
+                <div class="row g-4"
+                     style="align-content: center; align-items: center;">
+                    <div class="col-auto">
+                        <div class="avatar-lg">
+                            {% if space.image %}
+                                <img src="{{ space.image.url }}" alt="user-img"
+                                     style="height: auto; width: 100%; object-fit: cover; border-radius: 100%;
+                                     aspect-ratio: 1; border: .25rem solid #ffffff; background: #ffffff">
+                            {% else %}
+                                <img src="{% static 'images/404/image_not_found.png' %}" alt="user-img"
+                                     style="height: auto; width: 100%; object-fit: cover; border-radius: 100%;
+                                     aspect-ratio: 1; border: .25rem solid #ffffff; background: #ffffff">
+                            {% endif %}
+                        </div>
+                    </div>
+                    <!--end col-->
+                    <div class="col">
+                        <div class="p-2">
+                            <h3 class="text-white mb-1">{{ space.name }}</h3>
+                            <div class="hstack text-white-50 gap-1">
+                                <div class="me-2">
+                                    <i class="mdi mdi-map-marker me-1 text-white-75 fs-16 align-middle"></i>
+                                    {{ space.location }}
+                                </div>
+                                <div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--end col-->
+{#                    <div class="col-12 col-lg-auto order-last order-lg-0">#}
+{#                        <div class="row text text-white-50 text-center">#}
+{#                            <div class="col-lg-6 col-4">#}
+{#                                <div class="p-2">#}
+                                    {#                                    <h4 class="text-white mb-1">24.3K</h4>#}
+                                    {#                                    <p class="fs-15 mb-0">Followers</p>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                            <div class="col-lg-6 col-4">#}
+{#                                <div class="p-2">#}
+                                    {#                                    <h4 class="text-white mb-1">1.3K</h4>#}
+                                    {#                                    <p class="fs-15 mb-0">Following</p>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+                    <!--end col-->
+
+                </div>
+                <!--end row-->
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div>
+                        <div class="d-flex justify-content-end">
+                            <div class="flex-shrink-0">
+                                {%comment%}   <a href="" class="btn d-inline-block btn-success btn-update custom-btn"
+                                   data-bs-toggle="modal" data-bs-target="#updateModal"
+                                   data-id="{{ space.id }}">
+                                    <i class="mdi mdi-pencil fs-16"></i>
+                                    Edit Space</a>
+                               {%endcomment%}  
+                            </div>
+                        </div>
+                        <!-- Tab panes -->
+                        <div class="tab-content pt-4 text-muted">
+                            <div class="tab-pane active" id="overview-tab" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-xxl-4">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h5 class="card-title mb-3">Info</h5>
+                                                <div class="table-responsive">
+                                                    <table class="table table-borderless mb-0">
+                                                        <tbody>
+                                                        <tr>
+                                                            <th class="ps-0" scope="row">Full Name:</th>
+                                                            <td class="text-muted">{{ space.name }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="ps-0" scope="row">Location:</th>
+                                                            <td class="text-muted">{{ space.location }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="ps-0" scope="row">Address:</th>
+                                                            <td class="text-muted">{{ space.address }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="ps-0" scope="row">Phone:</th>
+                                                            <td class="text-muted">{{ space.phone }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="ps-0" scope="row">Website:</th>
+                                                            <td class="text-muted">{{ space.website }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="ps-0" scope="row">Customer Only:</th>
+                                                            <td class="text-muted">{{ space.customer_only }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="ps-0" scope="row">Approved:</th>
+                                                            <td class="text-muted">{{ space.approved }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="ps-0" scope="row">Free Parking:</th>
+                                                            <td class="text-muted">{{ space.free_parking }}</td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <th class="ps-0" scope="row">Remarks:</th>
+                                                            <td class="text-muted">{{ space.remarks }}</td>
+                                                        </tr>
+
+                                                         <tr>
+                                                            <th class="ps-0" scope="row">Service Types:</th>
+                                                            <td class="text-muted">{% for option in uwfs %}{{ option }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+                                                        </tr>
+                                                         <tr>
+                                                            <th class="ps-0" scope="row">Amenities:</th>
+                                                            <td class="text-muted">{% for option in space.amenities %}{{ option }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <th class="ps-0" scope="row">Parking Slots:</th>
+                                                            <td class="text-muted">{{ space.parking_slots }}</td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <th class="ps-0" scope="row">Charging Slots:</th>
+                                                            <td class="text-muted">{{ space.charging_slots }}</td>
+                                                        </tr>
+
+                                                        
+                                                        <tr>
+                                                            <th class="ps-0" scope="row">Added by:</th>
+                                                            <td class="text-muted">{{ space.added_by }}</td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <a href="" class="btn-update btn btn-primary m-1"
+                                                                   data-bs-toggle="modal" data-bs-target="#updateModal"
+                                                                   data-id="{{ space.id }}">Update
+                                                                </a>
+                                                <a href="" class="btn-add-parking-fare btn btn-primary m-1"
+                                                                   data-bs-toggle="modal" data-bs-target="#updateModal"
+                                                                   data-id="{{ space.id }}">Add Parking Fare
+                                                                </a>
+                                                <a href="" class="btn-add-charging-spot btn btn-primary m-1"
+                                                                   data-bs-toggle="modal" data-bs-target="#updateModal"
+                                                                   data-id="{{ space.id }}">Add Charging Spot
+                                                                </a>
+                                                <a href="" class="btn-add-washing-fare btn btn-primary m-1"
+                                                                data-bs-toggle="modal" data-bs-target="#updateModal"
+                                                                data-id="{{ space.id }}">Add Washing Fare
+                                                             </a>
+                                                <a href="" class="btn-add-time-slot btn btn-primary m-1"
+                                                             data-bs-toggle="modal" data-bs-target="#updateModal"
+                                                             data-id="{{ space.id }}">Add Time Slot
+                                                          </a>
+                                                {% if not is_featured_space %}
+                                                    <a href="#" class="btn-convert-featured btn btn-primary m-1"
+                                                            data-id="{{ space.id }}">Convert to Featured Space
+                                                        </a>
+                                                {% endif %}
+                                                                
+                                            </div><!-- end card body -->
+                                        </div><!-- end card -->
+                                    </div>
+                                    <!--end col-->
+                                    <div class="col-xxl-8">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                {#                                                <h5 class="card-title mb-3">About</h5>#}
+                                                <div class="table-responsive">
+                                                    <table class="table w-100">
+                                                        <tr>
+                                                            <th class="bg-light">Timing</th>
+                                                            <td>
+                                                                <table class="table w-100">
+                                                                    <tr>
+                                                                        <th class="bg-light">Day</th>
+                                                                        <th class="bg-light">Opening</th>
+                                                                        <th class="bg-light">Closing</th>
+                                                                        <th class="bg-light">Closed</th>
+                                                                    </tr>
+
+                                                                    <tr>
+                                                                        <td>Monday</td>
+                                                                        <td>{{ space.mon_opening_time }}</td>
+                                                                        <td>{{ space.mon_closing_time }}</td>
+                                                                        <td>{{ space.mon_closed }}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>Tuesday</td>
+                                                                        <td>{{ space.tue_opening_time }}</td>
+                                                                        <td>{{ space.tue_closing_time }}</td>
+                                                                        <td>{{ space.tue_closed }}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>Wednesday</td>
+                                                                        <td>{{ space.wed_opening_time }}</td>
+                                                                        <td>{{ space.wed_closing_time }}</td>
+                                                                        <td>{{ space.wed_closed }}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>Thursday</td>
+                                                                        <td>{{ space.thu_opening_time }}</td>
+                                                                        <td>{{ space.thu_closing_time }}</td>
+                                                                        <td>{{ space.thu_closed }}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>Friday</td>
+                                                                        <td>{{ space.fri_opening_time }}</td>
+                                                                        <td>{{ space.fri_closing_time }}</td>
+                                                                        <td>{{ space.fri_closed }}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>Saturday</td>
+                                                                        <td>{{ space.sat_opening_time }}</td>
+                                                                        <td>{{ space.sat_closing_time }}</td>
+                                                                        <td>{{ space.sat_closed }}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>Sunday</td>
+                                                                        <td>{{ space.sun_opening_time }}</td>
+                                                                        <td>{{ space.sun_closing_time }}</td>
+                                                                        <td>{{ space.sun_closed }}</td>
+                                                                    </tr>
+
+                                                                    {% comment %}
+
+                                                                    {% for ot in ots %}
+                                                                    <tr>
+                                                                        <td>
+                                                                            {% if ot.day == 1 %}
+                                                                            Sunday
+                                                                            {% elif ot.day == 2 %}
+                                                                            Monday
+                                                                            {% elif ot.day == 3 %}
+                                                                            Tuesday
+                                                                            {% elif ot.day == 4 %}
+                                                                            Wednesday
+                                                                            {% elif ot.day == 5 %}
+                                                                            Thursday
+                                                                            {% elif ot.day == 6 %}
+                                                                            Friday
+                                                                            {% else %}
+                                                                            Saturday
+                                                                            {% endif %}
+                                                                        </td>
+                                                                        <td>{{ ot.opening_time }}</td>
+                                                                        <td>{{ ot.closing_time }}</td>
+                                                                        <td>{{ ot.closed }}</td>
+                                                                    </tr>
+                                                                    {% endfor %}
+
+                                                                    {% endcomment %}
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <th class="bg-light">Parking Fare</th>
+                                                            <td>
+                                                                <table class="table w-100">
+                                                                    <tr>
+                                                                        <th class="bg-light">Vehicle</th>
+                                                                        <th class="bg-light">Fare</th>
+                                                                        <th class="bg-light">Slots</th>
+                                                                        <th class="bg-light">Action</th>
+                                                                    </tr>
+                                                                    {% for vp in vfs %}
+                                                                    <tr>
+                                                                        <td>
+                                                                            {% if vp.vehicle_type == 1 %}
+                                                                            Bike
+                                                                            {% elif vp.vehicle_type == 2 %}
+                                                                            Car
+                                                                            {% elif vp.vehicle_type == 3 %}
+                                                                            Heavy Vehicle
+                                                                            {% endif %}
+                                                                        </td>
+                                                                        <td>
+                                                                            2 hour : {{ vp.two_hour_charge }}<br>
+                                                                            3 hour : {{ vp.three_hour_charge }}<br>
+                                                                            Hourly : {{ vp.hourly_charge }}<br>
+                                                                            Daily : {{ vp.daily_charge }}<br>
+                                                                            Monthly : {{ vp.monthly_charge }}
+                                                                        </td>
+                                                                        <td>{{ vp.slot_count }}</td>
+                                                                        <td>
+                                                                            
+                                                                            <ul class="list-inline hstack gap-2 mb-0">
+                                                            
+                                                            <li class="list-inline-item" data-bs-toggle="tooltip"
+                                                                data-bs-trigger="hover" data-bs-placement="top"
+                                                                title="Edit">
+                                                                <a href="" class="d-inline-block btn-update-parking-fare custom-btn"
+                                                                   data-bs-toggle="modal" data-bs-target="#updateModal"
+                                                                   data-id="{{ vp.id }}">
+                                                                    <i class="mdi mdi-pencil fs-16"></i>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+
+                                                                        </td>
+                                                                    </tr>
+                                                                    {% endfor %}
+                                                                     
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <th class="bg-light">Charging Spot</th>
+                                                            <td>
+                                                                <table class="table w-100">
+                                                                    <tr>
+                                                                        <th class="bg-light">Type</th>
+                                                                        <th class="bg-light">Watt</th>
+                                                                        <th class="bg-light">Fare</th>
+                                                                        <th class="bg-light">Slots</th>
+                                                                        <th class="bg-light">Action</th>
+                                                                    </tr>
+                                                                    {% for cp in cps %}
+                                                                    <tr>
+                                                                        <td>
+                                                                            {% if cp.charging_type == 1 %}
+                                                                            CCS
+                                                                            {% elif cp.charging_type == 2 %}
+                                                                            Type 2
+                                                                            {% elif cp.charging_type == 3 %}
+                                                                            IEC_60309
+                                                                            {% elif cp.charging_type == 4 %}
+                                                                            6/16A Socket
+                                                                            {% elif cp.charging_type == 5 %}
+                                                                            GB/T
+                                                                            {% elif cp.charging_type == 6 %}
+                                                                            CHAdeMO
+                                                                            {% endif %}
+                                                                       </td>
+                                                                        <td>
+                                                                            {% if cp.charging_watt == 1 %}
+                                                                            3.3kW
+                                                                            {% elif cp.charging_watt == 2 %}
+                                                                            25kW
+                                                                            {% elif cp.charging_watt == 3 %}
+                                                                            30kW
+                                                                            {% elif cp.charging_watt == 4 %}
+                                                                            60kW
+                                                                            {% elif cp.charging_watt == 5 %}
+                                                                            22kW
+                                                                            {% elif cp.charging_watt == 6 %}
+                                                                            120kW
+                                                                            {% endif %}
+                                                                        </td>
+                                                                        <td>{{ cp.charging_fare }}</td>
+                                                                        <td>{{ cp.slot_count }}</td>
+
+                                                                        <td>
+                                                                            
+                                                                            <ul class="list-inline hstack gap-2 mb-0">
+                                                            
+                                                            <li class="list-inline-item" data-bs-toggle="tooltip"
+                                                                data-bs-trigger="hover" data-bs-placement="top"
+                                                                title="Edit">
+                                                                <a href="" class="d-inline-block btn-update-charging-spot custom-btn"
+                                                                   data-bs-toggle="modal" data-bs-target="#updateModal"
+                                                                   data-id="{{ cp.id }}">
+                                                                    <i class="mdi mdi-pencil fs-16"></i>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+
+                                                                        </td>
+                                                    
+                                                                    </tr>
+                                                                    {% endfor %}
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <th class="bg-light">Washing Fare</th>
+                                                            <td>
+                                                                <table class="table w-100">
+                                                                    <tr>
+                                                                        <th class="bg-light">Title</th>          
+                                                                        <th class="bg-light">Service Type</th>
+                                                                        <th class="bg-light">Cost</th>
+                                                                        <th class="bg-light">Doorstep Cost</th>
+                                                                        <th class="bg-light">Pick Up Cost</th>
+                                                                        <th class="bg-light">Action</th>
+                                                                    </tr>
+                                                                    {% for wf in wfs %}
+                                                                    <tr>
+                                                                        <td>
+                                                                            {{wf.title}}
+                                                                            {% comment %} {% if wf.vehicle_type == 1 %}
+                                                                            Bike/Scooter
+                                                                            {% elif wf.vehicle_type == 2 %}
+                                                                            Bullet
+                                                                            {% elif wf.vehicle_type == 3 %}
+                                                                            Premium Bikes
+                                                                            {% elif wf.vehicle_type == 4 %}
+                                                                            Super Bikes
+                                                                            {% elif wf.vehicle_type == 5 %}
+                                                                            Hatch Back
+                                                                            {% elif wf.vehicle_type == 6 %}
+                                                                            Sedan
+                                                                            {% elif wf.vehicle_type == 7 %}
+                                                                            Mini SUV
+                                                                            {% elif wf.vehicle_type == 8 %}
+                                                                            Premium Sedan
+                                                                            {% elif wf.vehicle_type == 9 %}
+                                                                            Premium SUV
+                                                                            {% endif %} {% endcomment %}
+                                                                       </td>
+                                                                        
+                                                                        <td>{{ wf.get_service_type_display }}</td>
+                                                                        <td>{{ wf.cost }}</td>
+                                                                        <td>{{ wf.doorstep_cost }}</td>
+                                                                        <td>{{ wf.pickup_cost }}</td>
+
+                                                                        <td>
+                                                                            
+                                                                            <ul class="list-inline hstack gap-2 mb-0">
+                                                                                <li class="list-inline-item" data-bs-toggle="tooltip"
+                                                                                    data-bs-trigger="hover" data-bs-placement="top"
+                                                                                    title="Edit">
+                                                                                    <a href="" class="d-inline-block btn-update-washing-fare custom-btn"
+                                                                                    data-bs-toggle="modal" data-bs-target="#updateModal"
+                                                                                    data-id="{{ wf.id }}">
+                                                                                        <i class="mdi mdi-pencil fs-16"></i>
+                                                                                    </a>
+                                                                                </li>
+                                                                            </ul>
+                                                                        </td>                                     
+                                                                    </tr>
+                                                                    {% endfor %}
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="bg-light">Time Slots</th>
+                                                            <td>
+                                                                <table class="table w-100">
+                                                                    <tr>
+                                                                        <th class="bg-light">#</th>
+                                                                        <th class="bg-light">Start Time</th>
+                                                                        <th class="bg-light">End Time</th>
+                                                                        <th class="bg-light">Action</th>
+                                                                    </tr>
+                                                                    {% for ts in time_slots %}
+                                                                    <tr>
+                                                                        <td>
+                                                                            {{ ts.id }}
+                                                                        </td>
+                                                                        <td>
+                                                                           {{ ts.start_time|time:"H:i" }}
+                                                                        </td>
+                                                                        <td>{{ ts.end_time|time:"H:i" }}</td>
+                                                                        <td>
+                                                                            
+                                                                            <ul class="list-inline hstack gap-2 mb-0">
+                                                            
+                                                            <li class="list-inline-item" data-bs-toggle="tooltip"
+                                                                data-bs-trigger="hover" data-bs-placement="top"
+                                                                title="Edit">
+                                                                <a href="" class="d-inline-block btn-update-time-slot custom-btn"
+                                                                   data-bs-toggle="modal" data-bs-target="#updateModal"
+                                                                   data-id="{{ ts.id }}">
+                                                                    <i class="mdi mdi-pencil fs-16"></i>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+
+                                                                        </td>
+                                                                    </tr>
+                                                                    {% endfor %}
+                                                                     
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+
+                                                        {% comment %}
+                                                        
+                                                        <tr>
+                                                            <th class="bg-light">Details</th>
+                                                            <td>{{ data | safe }}</td>
+                                                        </tr>
+
+                                                         {% endcomment %}
+                                                    </table>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-auto">
+                                                        <div class="d-flex mt-4">
+                                                            <div class="flex-shrink-0 avatar-xs align-self-center me-3">
+                                                                <div class="avatar-title bg-light rounded-circle fs-16 text-primary">
+                                                                    <i class="mdi mdi-map-marker"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div class="flex-grow-1 overflow-hidden">
+                                                                <p class="mb-1">Location</p>
+                                                                <h6 class="text-truncate mb-0">
+                                                                    <a href="{{ space.map_url }}" class="fw-semibold
+                                                                    fs-15" target="_blank">
+                                                                        Find on Maps</a></h6>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!--end col-->
+                                                    {#                                                    <div class="col-6 col-md-4">#}
+                                                    {#                                                        <div class="d-flex mt-4">#}
+                                                    {#                                                            <div class="flex-shrink-0 avatar-xs align-self-center me-3">#}
+                                                    {#                                                                <div class="avatar-title bg-light rounded-circle fs-16 text-primary">#}
+                                                    {#                                                                    <i class="mdi mdi-web"></i>#}
+                                                    {#                                                                </div>#}
+                                                    {#                                                            </div>#}
+                                                    {#                                                            <div class="flex-grow-1 overflow-hidden">#}
+                                                    {#                                                                <p class="mb-1">Website</p>#}
+                                                    {#                                                                <a href="{{ space.webs }}" class="fw-semibold fs-15"#}
+                                                    {#                                                                >{{ space.map_url }}</a>#}
+                                                    {#                                                            </div>#}
+                                                    {#                                                        </div>#}
+                                                    {#                                                    </div>#}
+                                                    <!--end col-->
+                                                </div>
+                                                <!--end row-->
+                                            </div>
+                                            <!--end card-body-->
+                                        </div><!-- end card -->
+                                    </div>
+                                    <!--end col-->
+                                </div>
+                                <!--end row-->
+                                <div class="row">
+                                     {% if space.image %}
+                                    <div class="col-md-4">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <p>Exterior</p>
+                                            </div>
+                                            <div class="card-body">
+                                                 <img src="{{ space.image.url }}" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                     {% endif %}
+                                     {% if space.image_2 %}
+                                    <div class="col-md-4">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <p>Exterior</p>
+                                            </div>
+                                            <div class="card-body">
+                                                 <img src="{{ space.image_2.url }}" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                     {% endif %}
+
+                                     {% if space.image_3 %}
+                                    <div class="col-md-4">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <p>Exterior</p>
+                                            </div>
+                                            <div class="card-body">
+                                                 <img src="{{ space.image_3.url }}" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                     {% endif %}
+                                     {% if space.entrance_image %}
+                                    <div class="col-md-4">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <p>Entrance</p>
+                                            </div>
+                                            <div class="card-body">
+                                                 <img src="{{ space.entrance_image.url }}" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                     {% endif %}
+                                     {% if space.signage_image %}
+                                    <div class="col-md-4">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <p>Signage</p>
+                                            </div>
+                                            <div class="card-body">
+                                                 <img src="{{ space.signage_image.url }}" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                     {% endif %}
+                                     {% if space.layout_image %}
+                                    <div class="col-md-4">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <p>Layout</p>
+                                            </div>
+                                            <div class="card-body">
+                                                 <img src="{{ space.layout_image.url }}" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                     {% endif %}
+                                     {% if space.amenities_image_1 %}
+                                    <div class="col-md-4">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <p>Amenities 1</p>
+                                            </div>
+                                            <div class="card-body">
+                                                 <img src="{{ space.amenities_image_1.url }}" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                     {% endif %}
+                                    {% if space.amenities_image_2 %}
+                                    <div class="col-md-4">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <p>Amenities 2</p>
+                                            </div>
+                                            <div class="card-body">
+                                                 <img src="{{ space.amenities_image_2.url }}" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                     {% endif %}
+                                     {% if space.amenities_image_3 %}
+                                    <div class="col-md-4">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <p>Amenities 3</p>
+                                            </div>
+                                            <div class="card-body">
+                                                 <img src="{{ space.amenities_image_3.url }}" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                     {% endif %}
+
+
+
+                                </div>
+                            </div>
+                        </div>
+                        <!--end tab-content-->
+                    </div>
+                </div>
+                <!--end col-->
+            </div>
+            <!--end row-->
+
+            
+
+            {% include "dashboard/includes/modals/update.html" with title="Space" %}
+            {% include "dashboard/includes/modals/delete.html" with title1="a Space" title2="Space" %}
+            <div class="modal fade" id="convertFeaturedModal" tabindex="-1" aria-labelledby="convertFeaturedModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="convertFeaturedModalLabel">Confirm Conversion</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to convert this space to a featured space?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <a href="#" id="confirmConvert" class="btn btn-success">Confirm</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div><!-- container-fluid -->
+    </div>
+
+
+{% endblock content %}
+
+{% block js %}
+
+    <script src="{% static 'dashboard/assets/libs/sweetalert2/sweetalert2.min.js' %}"></script>
+    <script src="{% static 'dashboard/assets/libs/apexcharts/apexcharts.min.js' %}"></script>
+    <script src="{% static 'dashboard/assets/js/pages/modal.init.js' %}"></script>
+
+{% endblock js %}
+
+{% block script %}
+
+
+    <script>
+        $(function () {
+            $(".btn-update").click(function () {
+                $('#updateModal').modal('toggle');
+                $('#updateModalLabel').text('Update Space');
+                var id = $(this).data("id")
+                var update_url = '/update_space/' + id + '/' + 2 + '/'
+                $('#update-form').attr('action', update_url)
+                $.ajax({
+                    type: 'GET',
+                    url: update_url,
+                    beforeSend: function () {
+                        $('#update-form-box').addClass('hidden');
+                        $('#btn-modal-update').addClass('hidden');
+                        $('#update-loading').removeClass('hidden');
+                    },
+                    success: function (response) {
+                        $('#update-form-box').removeClass('hidden');
+                        $('#btn-modal-update').removeClass('hidden');
+                        $('#update-loading').addClass('hidden');
+                        $('#update-form-box').html(response)
+                    },
+                    error: function (error) {
+                        alert(error)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                })
+            });
+            $(".btn-update-time").click(function () {
+                $('#updateModal').modal('toggle');
+                var id = $(this).data("id")
+                var update_url = '/update_space_time/' + id + '/' + 2 + '/'
+                $('#update-form').attr('action', update_url)
+                $.ajax({
+                    type: 'GET',
+                    url: update_url,
+                    beforeSend: function () {
+                        $('#update-form-box').addClass('hidden');
+                        $('#btn-modal-update').addClass('hidden');
+                        $('#update-loading').removeClass('hidden');
+                    },
+                    success: function (response) {
+                        $('#update-form-box').removeClass('hidden');
+                        $('#btn-modal-update').removeClass('hidden');
+                        $('#update-loading').addClass('hidden');
+                        $('#update-form-box').html(response)
+                    },
+                    error: function (error) {
+                        alert(error)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                })
+            });
+            $(".btn-update-parking-fare").click(function () {
+                $('#updateModalLabel').text('Update Parking Fare');
+                $('#updateModal').modal('toggle');
+                var id = $(this).data("id")
+                var update_url = '/update_parking_fare/' + id + '/' + 2 + '/'
+                $('#update-form').attr('action', update_url)
+                $.ajax({
+                    type: 'GET',
+                    url: update_url,
+                    beforeSend: function () {
+                        $('#update-form-box').addClass('hidden');
+                        $('#btn-modal-update').addClass('hidden');
+                        $('#update-loading').removeClass('hidden');
+                    },
+                    success: function (response) {
+                        $('#update-form-box').removeClass('hidden');
+                        $('#btn-modal-update').removeClass('hidden');
+                        $('#update-loading').addClass('hidden');
+                        $('#update-form-box').html(response)
+                    },
+                    error: function (error) {
+                        alert(error)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                })
+            });
+            $(".btn-add-parking-fare").click(function () {
+                $('#updateModalLabel').text('Add Parking Fare');
+                $('#updateModal').modal('toggle');
+                var id = $(this).data("id")
+                var update_url = '/add_parking_fare/' + id + '/' + 2 + '/'
+                $('#update-form').attr('action', update_url)
+                $.ajax({
+                    type: 'GET',
+                    url: update_url,
+                    beforeSend: function () {
+                        $('#update-form-box').addClass('hidden');
+                        $('#btn-modal-update').addClass('hidden');
+                        $('#update-loading').removeClass('hidden');
+                    },
+                    success: function (response) {
+                        $('#update-form-box').removeClass('hidden');
+                        $('#btn-modal-update').removeClass('hidden');
+                        $('#update-loading').addClass('hidden');
+                        $('#update-form-box').html(response)
+                        $('button[form="update-form"]').text('Add');
+                    },
+                    error: function (error) {
+                        alert(error)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                })
+            });
+            
+            $(".btn-add-time-slot").click(function () {
+                $('#updateModalLabel').text('Add Time Slot');
+                $('#updateModal').modal('toggle');
+                var id = $(this).data("id")
+                var update_url = '/add_time_slot/' + id + '/' + 2 + '/'
+                $('#update-form').attr('action', update_url)
+                $.ajax({
+                    type: 'GET',
+                    url: update_url,
+                    beforeSend: function () {
+                        $('#update-form-box').addClass('hidden');
+                        $('#btn-modal-update').addClass('hidden');
+                        $('#update-loading').removeClass('hidden');
+                    },
+                    success: function (response) {
+                        $('#update-form-box').removeClass('hidden');
+                        $('#btn-modal-update').removeClass('hidden');
+                        $('#update-loading').addClass('hidden');
+                        $('#update-form-box').html(response)
+                        $('button[form="update-form"]').text('Add');
+                    },
+                    error: function (error) {
+                        alert(error)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                })
+            });
+            
+
+            $(".btn-update-time-slot").click(function () {
+                $('#updateModalLabel').text('Update Time Slot');
+                $('#updateModal').modal('toggle');
+                var id = $(this).data("id")
+                var update_url = '/update_time_slot/' + id + '/' + 2 + '/'
+                $('#update-form').attr('action', update_url)
+                $.ajax({
+                    type: 'GET',
+                    url: update_url,
+                    beforeSend: function () {
+                        $('#update-form-box').addClass('hidden');
+                        $('#btn-modal-update').addClass('hidden');
+                        $('#update-loading').removeClass('hidden');
+                    },
+                    success: function (response) {
+                        $('#update-form-box').removeClass('hidden');
+                        $('#btn-modal-update').removeClass('hidden');
+                        $('#update-loading').addClass('hidden');
+                        $('#update-form-box').html(response)
+                    },
+                    error: function (error) {
+                        alert(error)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                })
+            });
+
+            $(".btn-update-charging-spot").click(function () {
+                $('#updateModalLabel').text('Update Charging Spot');
+                $('#updateModal').modal('toggle');
+                var id = $(this).data("id")
+                var update_url = '/update_charging_spot/' + id + '/' + 2 + '/'
+                $('#update-form').attr('action', update_url)
+                $.ajax({
+                    type: 'GET',
+                    url: update_url,
+                    beforeSend: function () {
+                        $('#update-form-box').addClass('hidden');
+                        $('#btn-modal-update').addClass('hidden');
+                        $('#update-loading').removeClass('hidden');
+                    },
+                    success: function (response) {
+                        $('#update-form-box').removeClass('hidden');
+                        $('#btn-modal-update').removeClass('hidden');
+                        $('#update-loading').addClass('hidden');
+                        $('#update-form-box').html(response)
+                    },
+                    error: function (error) {
+                        alert(error)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                })
+            });
+            $(".btn-add-charging-spot").click(function () {
+                $('#updateModalLabel').text('Add Charging Spot');
+                $('#updateModal').modal('toggle');
+                var id = $(this).data("id")
+                var update_url = '/add_charging_spot/' + id + '/' + 2 + '/'
+                $('#update-form').attr('action', update_url)
+                $.ajax({
+                    type: 'GET',
+                    url: update_url,
+                    beforeSend: function () {
+                        $('#update-form-box').addClass('hidden');
+                        $('#btn-modal-update').addClass('hidden');
+                        $('#update-loading').removeClass('hidden');
+                    },
+                    success: function (response) {
+                        $('#update-form-box').removeClass('hidden');
+                        $('#btn-modal-update').removeClass('hidden');
+                        $('#update-loading').addClass('hidden');
+                        $('#update-form-box').html(response)
+                        $('button[form="update-form"]').text('Add');
+                    },
+                    error: function (error) {
+                        alert(error)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                })
+            });
+
+            $(".btn-update-washing-fare").click(function () {
+                $('#updateModalLabel').text('Update Washing Fare');
+                $('#updateModal').modal('toggle');
+                var id = $(this).data("id")
+                var update_url = '/update_washing_fare/' + id + '/' + 2 + '/'
+                $('#update-form').attr('action', update_url)
+                $.ajax({
+                    type: 'GET',
+                    url: update_url,
+                    beforeSend: function () {
+                        $('#update-form-box').addClass('hidden');
+                        $('#btn-modal-update').addClass('hidden');
+                        $('#update-loading').removeClass('hidden');
+                    },
+                    success: function (response) {
+                        $('#update-form-box').removeClass('hidden');
+                        $('#btn-modal-update').removeClass('hidden');
+                        $('#update-loading').addClass('hidden');
+                        $('#update-form-box').html(response)
+                    },
+                    error: function (error) {
+                        alert(error)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                })
+            });
+            $(".btn-add-washing-fare").click(function () {
+                $('#updateModalLabel').text('Add Washing Fare');
+                $('#updateModal').modal('toggle');
+                var id = $(this).data("id")
+                var update_url = '/add_washing_fare/' + id + '/' + 2 + '/'
+                $('#update-form').attr('action', update_url)
+                $.ajax({
+                    type: 'GET',
+                    url: update_url,
+                    beforeSend: function () {
+                        $('#update-form-box').addClass('hidden');
+                        $('#btn-modal-update').addClass('hidden');
+                        $('#update-loading').removeClass('hidden');
+                    },
+                    success: function (response) {
+                        $('#update-form-box').removeClass('hidden');
+                        $('#btn-modal-update').removeClass('hidden');
+                        $('#update-loading').addClass('hidden');
+                        $('#update-form-box').html(response)
+                        $('button[form="update-form"]').text('Add');
+                    },
+                    error: function (error) {
+                        alert(error)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                })
+            });
+        });
+    </script>
+
+    <script>
+        $(function() {
+            $(".btn-convert-featured").click(function(e) {
+                e.preventDefault();
+                var spaceId = $(this).data("id");
+                var convertUrl = '/convert_to_featured_space/' + spaceId + '/';
+                $('#confirmConvert').attr('href', convertUrl);
+                $('#convertFeaturedModal').modal('show');
+            });
+        });
+    </script>
+
+    <script>
+        $('.deleteConfirmModalClass').click(function () {
+            $('#delete-record').data('value', $(this).data('value'))
+            $('#delete-record').click(function () {
+                $.ajax({
+                    url: '/delete_space/' + $(this).data('value') + '/',
+                    type: 'POST',
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                    },
+                    success: function (data) {
+                        window.location.reload();
+                    }
+                })
+            })
+        });
+    </script>
+
+
+{% endblock script %}

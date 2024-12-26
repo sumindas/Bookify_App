@@ -1,0 +1,336 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+
+{% block css %}
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
+    <!-- Sweet Alert css-->
+    <link href="{% static 'dashboard/assets/libs/sweetalert2/sweetalert2.min.css' %}" rel="stylesheet" type="text/css"/>
+    <!--Swiper slider css-->
+    <link href="{% static 'dashboard/assets/libs/swiper/swiper-bundle.min.css' %}" rel="stylesheet" type="text/css"/>
+
+{% endblock css %}
+
+{% block style %}
+    <style>
+        .form-group {
+            margin-top: 1rem;
+        }
+    /* General badge styling */
+.badge {
+    display: inline-block;
+    padding: 0.25em 0.6em;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+    color: #fff; /* White text */
+  }
+  
+  /* Green badge for 'Open' */
+  .badge-success {
+    background-color: #28a745; /* Green background */
+  }
+  
+  /* Red badge for 'Closed' */
+  .badge-danger {
+    background-color: #dc3545; /* Red background */
+  }
+  
+    </style>
+{% endblock style %}
+
+
+{% block content %}
+
+    <div class="page-content">
+        <div class="container-fluid">
+
+            <!-- start page title -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                        <h4 class="mb-sm-0">Space Manager</h4>
+
+                        <div class="page-title-right">
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item">Dashboard</li>
+                                <li class="breadcrumb-item">Space</li>
+                                <li class="breadcrumb-item active">Manage</li>
+                            </ol>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- end page title -->
+
+            <div class="row">
+                <div class="col">
+                    <div class="h-100">
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="d-flex align-items-lg-center flex-lg-row flex-column">
+                                    <div class="flex-grow-1">
+                                        {#                                        <h4 class="fs-16 mb-1">Good Morning, {{ request.user }}!</h4>#}
+                                    </div>
+                                    <div class="mt-3 mt-lg-0"></div>
+                                </div><!-- end card header -->
+                            </div>
+                            <!--end col-->
+                        </div>
+
+                        <div class="pt-4 pb-3">
+                            {# ------------------------------------Contents start------------------------------------ #}
+
+                            <div class="m-1">
+
+                                <div class="card rounded shadow">
+                                    <div class="card-header"
+                                         style="display: flex;
+                                         align-content: center;
+                                         align-items: center;
+                                         justify-content: flex-end;">
+                                        <button href="" class="btn btn-soft-success"
+                                                data-bs-toggle="modal" data-bs-target="#addModal">
+                                            <i class="mdi mdi-plus-thick"></i> Add Space
+                                        </button>
+                                    </div>
+                                    <div class="card-body">
+                                        {#                                        <div class="">#}
+                                            <table class="table table-sm w-100" id="DatatableID">
+                                            <thead class="bg-light">
+                                            <tr class="text-uppercase w-100">
+                                                <th>#</th>
+                                                <th>Name</th>
+                                                <th>location</th>
+                                                <th>State</th>
+                                                <th>Added By</th>
+                                                <th>services</th>
+                                                <th>Open Status</th>
+                                                <th>Approval Status</th>
+                                                <th>created</th>
+                                                <th>Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                        {#                                        </div>#}
+                                    </div>
+                                </div>
+
+                            </div><!-- end row -->
+
+                            {# -------------------------------------Contents end------------------------------------- #}
+                        </div>
+
+                        <!--end row-->
+                    </div> <!-- end .h-100-->
+                </div> <!-- end col -->
+            </div>
+
+            {% include 'dashboard/includes/modals/add.html' with title="Space" %}
+
+            {% include "dashboard/includes/modals/update.html" with title="Space" %}
+
+            {% include "dashboard/includes/modals/delete.html" with title1="a Space" title2="Space" %}
+
+        </div>
+        <!-- container-fluid -->
+    </div>
+
+
+{% endblock content %}
+
+{% block js %}
+
+    <script src="{% static 'dashboard/assets/libs/sweetalert2/sweetalert2.min.js' %}"></script>
+    <script src="{% static 'dashboard/assets/libs/apexcharts/apexcharts.min.js' %}"></script>
+    <script src="{% static 'dashboard/assets/js/pages/modal.init.js' %}"></script>
+
+{% endblock js %}
+
+{% block script %}
+
+<script>
+    $(document).ready(function () {
+        var table = $('#DatatableID').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ajax": {
+                "url": "{% url 'dashboard-all-space-list' %}",
+                "type": "GET",
+                "data": function (d) {
+                    d.search = {
+                        "value": $('input[type="search"]').val(),
+                        "regex": false
+                    };
+                    d.approval = $('#approval_status').val();  // Send approval status filter
+                    d.space_type = $('#space_type').val();
+                }
+            },
+            "columns": [
+                {"data": "id"},
+                {"data": "name"},
+                {"data": "location"},
+                {"data": "state"},
+                {"data": "added_by"},
+                {"data": "services"},
+                {
+                    "data": "open_status",
+                    "render": function (data, type, row, meta) {
+                        return data ? '<span class="badge badge-danger">Closed</span>' : '<span class="badge badge-success">Open</span>';
+                    }
+                },
+                {
+                    "data": "approve",
+                    "render": function (data, type, row, meta) {
+                        return data ? '<span class="badge badge-success">Approved</span>' : '<span class="badge badge-danger">Not Approved</span>';
+                    }
+                },
+                {"data": "created"},
+                {
+                    "data": "id",
+                    "orderable": false,
+                    "searchable": false,
+                    "render": function (data, type, row, meta) {
+                        return `
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#updateModal"
+                               class="text-primary d-inline-block updateModalClass" data-id="${data}"
+                               data-bs-toggle="tooltip" title="Edit"><i class="mdi mdi-pencil"></i></a>
+                            <a href='/view_space/${data}/'><i class="mdi mdi-eye"></i></a>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
+                               class="text-danger d-inline-block deleteConfirmModalClass" data-id="${data}"
+                               data-bs-toggle="tooltip" title="Remove"><i class="mdi mdi-delete fs-16"></i></a>
+                        `;
+                    }
+                }
+            ],
+            "lengthMenu": [
+                [25, 50, 100],
+                [25, 50, 100]
+            ],
+            "pageLength": 25,
+            "responsive": true,
+            "scrollX": true,
+            "scrollY": "50vh",
+            "scrollCollapse": true,
+            "ordering": true,
+            "language": {
+                "searchPlaceholder": "Search Spaces",
+                "lengthMenu": "Show _MENU_",
+                "zeroRecords": `<span class="text-danger">No data found</span>`,
+                "info": "Showing page _PAGE_ of _PAGES_ (Total records: _TOTAL_)",
+                "infoEmpty": "No records available",
+                "infoFiltered": "(filtered from _MAX_ total records)",
+                "paginate": {
+                    "first": `<i class="mdi mdi-arrow-left"></i>`,
+                    "previous": `<i class="mdi mdi-arrow-left"></i>`,
+                    "last": `<i class="mdi mdi-arrow-right"></i>`,
+                    "next": `<i class="mdi mdi-arrow-right"></i>`
+                }
+            },
+            "dom": "<'row'<'col-sm-12 d-flex justify-content-between align-items-center'<'d-flex align-items-center'l><'d-inline-block ml-2'f>>>" +
+                   "<'row'<'col-sm-12'tr>>" +
+                   "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+            "initComplete": function(settings, json) {
+                var filterHtml = `
+                    <div class="d-inline-block ml-2 mb-2">
+                        <select id="approval_status" class="form-select form-select-sm d-inline-block w-auto">
+                            <option value="all">All</option>
+                            <option value="1">Approved</option>
+                            <option value="0">Not Approved</option>
+                        </select>
+                         <select id="space_type" class="form-select form-select-sm d-inline-block w-auto">
+                            <option value="all">All Services</option>
+                            {% for value, label in space_types %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                        <button id="approval-filter-btn" class="btn btn-sm btn-soft-success">Apply Filter</button>
+                    </div>
+                `;
+                $(filterHtml).insertAfter('.dataTables_length');
+                $('.dataTables_length').css('margin-right', '10px');
+            }
+        });
+    
+        $(document).on('click', '#approval-filter-btn', function () {
+            table.ajax.reload();
+        });
+    });
+</script>
+
+
+
+    <script>
+        $('#addModalForm').attr('action', '{% url 'dashboard-add-space' %}')
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('#DatatableID').on('click', '.updateModalClass', function(e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+                var update_url = '{% url "dashboard-update-space" 0 1 %}'.replace('0', id);
+        
+                $('#updateModal').modal('show');
+                $('#update-form').attr('action', update_url);
+        
+                $.ajax({
+                    type: 'GET',
+                    url: update_url,
+                    beforeSend: function () {
+                        $('#update-form-box').addClass('hidden');
+                        $('#btn-modal-update').addClass('hidden');
+                        $('#update-loading').removeClass('hidden');
+                    },
+                    success: function (response) {
+                        $('#update-form-box').removeClass('hidden');
+                        $('#btn-modal-update').removeClass('hidden');
+                        $('#update-loading').addClass('hidden');
+                        $('#update-form-box').html(response);
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            });
+            $('#DatatableID').on('click', '.deleteConfirmModalClass', function(e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+                $('#deleteConfirmModal').modal('show');
+                
+                $('#delete-record').off('click').on('click', function() {
+                    $.ajax({
+                        url: '{% url "dashboard-delete-space" 0 %}'.replace('0', id),
+                        type: 'POST',
+                        data: {
+                            csrfmiddlewaretoken: '{{ csrf_token }}',
+                        },
+                        success: function (data) {
+                            $('#deleteConfirmModal').modal('hide');
+                            // Refresh the DataTable
+                            $('#DatatableID').DataTable().ajax.reload();
+                        },
+                        error: function(error) {
+                            console.log(error);
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+
+
+
+
+{% endblock script %}

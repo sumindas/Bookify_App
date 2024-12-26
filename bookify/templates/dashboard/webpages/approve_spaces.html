@@ -1,0 +1,245 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+
+{% block css %}
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
+    <!-- Sweet Alert css-->
+    <link href="{% static 'dashboard/assets/libs/sweetalert2/sweetalert2.min.css' %}" rel="stylesheet" type="text/css"/>
+    <!--Swiper slider css-->
+    <link href="{% static 'dashboard/assets/libs/swiper/swiper-bundle.min.css' %}" rel="stylesheet" type="text/css"/>
+
+{% endblock css %}
+
+{% block style %}
+    <style>
+        .form-group {
+            margin-top: 1rem;
+        }
+    </style>
+{% endblock style %}
+
+
+{% block content %}
+
+    <div class="page-content">
+        <div class="container-fluid">
+
+            <!-- start page title -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                        <h4 class="mb-sm-0">Space Manager</h4>
+
+                        <div class="page-title-right">
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item">Dashboard</li>
+                                <li class="breadcrumb-item">Space</li>
+                                <li class="breadcrumb-item active">Manage</li>
+                            </ol>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- end page title -->
+
+            <div class="row">
+                <div class="col">
+                    <div class="h-100">
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="d-flex align-items-lg-center flex-lg-row flex-column">
+                                    <div class="flex-grow-1">
+                                        {#                                        <h4 class="fs-16 mb-1">Good Morning, {{ request.user }}!</h4>#}
+                                    </div>
+                                    <div class="mt-3 mt-lg-0"></div>
+                                </div><!-- end card header -->
+                            </div>
+                            <!--end col-->
+                        </div>
+
+                        <div class="pt-4 pb-3">
+                            {# ------------------------------------Contents start------------------------------------ #}
+
+                            <div class="m-1">
+
+                                <div class="card rounded shadow">
+                                    <div class="card-header"
+                                         style="display: flex;
+                                         align-content: center;
+                                         align-items: center;
+                                         justify-content: flex-end;">
+                                        <button href="" class="btn btn-soft-success"
+                                                data-bs-toggle="modal" data-bs-target="#addModal">
+                                            <i class="mdi mdi-plus-thick"></i> Add Space
+                                        </button>
+                                    </div>
+                                    <div class="card-body">
+                                        {#                                        <div class="">#}
+                                        <table id="spaceDatatable" class="table w-100">
+                                            <thead class="bg-light">
+                                            <tr class="text-uppercase w-100">
+                                                <th>Id</th>
+                                                <th>Created</th>
+                                                <th>Name</th>
+                                                <th>location</th>
+                                                <th>Added by</th>
+                                                
+                                                <th>Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for space in spaces %}
+                                                <tr class="w-100">
+                                                    <td class="align-middle">{{ space.id }}</td>
+                                                    <td class="align-middle" data-sort="{{ space.created|date:'YmdHi' }}">{{ space.created }}</td>
+                                                    <td class="align-middle">{{ space.name }}</td>
+                                                    <td class="align-middle">{{ space.location }}</td>
+                                                    <td class="align-middle">{{ space.added_by }}</td>
+                                                    
+                                                    <td class="align-middle">
+                                                        <ul class="list-inline hstack gap-2 mb-0">
+                                                            <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="View">
+                                                                <a href="{% url 'dashboard-view-approve-space' space.id %}"
+                                                                   class="text-primary
+                                                                            d-inline-block">
+                                                                    <i class="mdi mdi-eye fs-16"></i>
+                                                                </a>
+                                                            </li>
+                                                            
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        {#                                        </div>#}
+                                    </div>
+                                </div>
+
+                            </div><!-- end row -->
+
+                            {# -------------------------------------Contents end------------------------------------- #}
+                        </div>
+
+                        <!--end row-->
+                    </div> <!-- end .h-100-->
+                </div> <!-- end col -->
+            </div>
+
+            {% include 'dashboard/includes/modals/add.html' with title="Space" %}
+
+            {% include "dashboard/includes/modals/update.html" with title="Space" %}
+
+            {% include "dashboard/includes/modals/delete.html" with title1="a Space" title2="Space" %}
+
+        </div>
+        <!-- container-fluid -->
+    </div>
+
+
+{% endblock content %}
+
+{% block js %}
+
+    <script src="{% static 'dashboard/assets/libs/sweetalert2/sweetalert2.min.js' %}"></script>
+    <script src="{% static 'dashboard/assets/libs/apexcharts/apexcharts.min.js' %}"></script>
+    <script src="{% static 'dashboard/assets/js/pages/modal.init.js' %}"></script>
+
+{% endblock js %}
+
+{% block script %}
+
+    <script>
+        $(document).ready(function () {
+            $('#spaceDatatable').DataTable({
+                scrollX: true,
+                "aaSorting": [[0, 'desc']],
+                "columnDefs": [{
+                    {#"targets": [0, 6],#}
+                    {#"orderable": false#}
+                }],
+                language: {
+                    "searchPlaceholder": "Search spaces",
+                },
+            });
+            $('select[name="spaceDatatable_length"]').removeClass('form-select-sm')
+            $('#spaceDatatable_filter input').removeClass('form-control-sm')
+            $('.dataTables_scrollHeadInner').addClass('w-100').css(
+                {
+                    "width": "auto",
+                }
+            )
+            $('.dataTables_scrollFootInner').addClass('w-100').css(
+                {
+                    "width": "auto",
+                }
+            )
+            {#$('.odd').addClass('w-100')#}
+            {#$('.even').addClass('w-100')#}
+        });
+    </script>
+
+
+    <script>
+        $('#addModalForm').attr('action', '{% url 'dashboard-add-space' %}')
+    </script>
+
+    <script>
+        $(function () {
+            $(".btn-update").click(function () {
+                $('#updateModal').modal('toggle');
+                var id = $(this).data("id")
+                var update_url = '/update_space/' + id + '/' + 1 + '/'
+                $('#update-form').attr('action', update_url)
+                $.ajax({
+                    type: 'GET',
+                    url: update_url,
+                    beforeSend: function () {
+                        $('#update-form-box').addClass('hidden');
+                        $('#btn-modal-update').addClass('hidden');
+                        $('#update-loading').removeClass('hidden');
+                    },
+                    success: function (response) {
+                        $('#update-form-box').removeClass('hidden');
+                        $('#btn-modal-update').removeClass('hidden');
+                        $('#update-loading').addClass('hidden');
+                        $('#update-form-box').html(response)
+                    },
+                    error: function (error) {
+                        console.log(error)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                })
+            });
+        });
+    </script>
+
+
+    <script>
+        $('.deleteConfirmModalClass').click(function () {
+            $('#delete-record').data('value', $(this).data('value'))
+            $('#delete-record').click(function () {
+                $.ajax({
+                    url: '/delete_space/' + $(this).data('value') + '/',
+                    type: 'POST',
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                    },
+                    success: function (data) {
+                        window.location.reload();
+                    }
+                })
+            })
+        })
+    </script>
+
+
+{% endblock script %}

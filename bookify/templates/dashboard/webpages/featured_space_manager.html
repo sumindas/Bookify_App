@@ -1,0 +1,235 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+
+{% block css %}
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
+    <!-- Sweet Alert css-->
+    <link href="{% static 'dashboard/assets/libs/sweetalert2/sweetalert2.min.css' %}" rel="stylesheet" type="text/css"/>
+    <!--Swiper slider css-->
+    <link href="{% static 'dashboard/assets/libs/swiper/swiper-bundle.min.css' %}" rel="stylesheet" type="text/css"/>
+
+{% endblock css %}
+
+{% block style %}
+    <style>
+        .form-group {
+            margin-top: 1rem;
+        }
+    </style>
+{% endblock style %}
+
+
+{% block content %}
+
+    <div class="page-content">
+        <div class="container-fluid">
+
+            <!-- start page title -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                        <h4 class="mb-sm-0">Featured Space Manager</h4>
+
+                        <div class="page-title-right">
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item">Dashboard</li>
+                                <li class="breadcrumb-item">Featured Space</li>
+                                <li class="breadcrumb-item active">Manage</li>
+                            </ol>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- end page title -->
+
+            <div class="row">
+                <div class="col">
+                    <div class="h-100">
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="d-flex align-items-lg-center flex-lg-row flex-column">
+                                    <div class="flex-grow-1">
+                                        {#                                        <h4 class="fs-16 mb-1">Good Morning, {{ request.user }}!</h4>#}
+                                    </div>
+                                    <div class="mt-3 mt-lg-0"></div>
+                                </div><!-- end card header -->
+                            </div>
+                            <!--end col-->
+                        </div>
+
+                        <div class="pt-4 pb-3">
+                            {# ------------------------------------Contents start------------------------------------ #}
+
+                            <div class="m-1">
+
+                                <div class="card rounded shadow">
+                                    <div class="card-header"
+                                         style="display: flex;
+                                         align-content: center;
+                                         align-items: center;
+                                         justify-content: flex-end;">
+                                        {% comment %} <button href="" class="btn btn-soft-success"
+                                                data-bs-toggle="modal" data-bs-target="#addModal">
+                                            <i class="mdi mdi-plus-thick"></i> Add Featured Space
+                                        </button> {% endcomment %}
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            {% for banner in featured_spaces %}
+                                                <div class="col-md-4">
+                                                    <div class="card shadow-lg">
+                                                        {% if banner.image %}
+                                                            <img class="card-img-top" src="{{ banner.image.url }}" alt="Image Unavailable"
+                                                                 style="object-fit: contain; height: 15rem; width:100%;">
+                                                        {% else %}
+                                                            <img class="card-img-top"
+                                                                 src="{% static 'images/404/image_not_found.png' %}"
+                                                                 alt="Image Unavailable"
+                                                                 style="object-fit: cover; height: 20rem">
+                                                        {% endif %}
+                                                        <div class="card-body">
+                                                            <p>Space:
+                                                                {% if banner.space %}
+                                                                    <a href = '/view_space/{{banner.space.id}}/'>
+                                                                        <span class="text-success">{{banner.space.name}}</span>
+                                                                    </a>
+                                                                {% else %}
+                                                                    Parking
+                                                                {% endif %}
+                                                            </p>
+                                                        </div>
+                                                        <div class="card-footer">
+                                                            <div class="row">
+                                                                <div class="col-6"></div>
+                                                                <div class="col-6"
+                                                                     style="
+                                                                display: flex;
+                                                                align-content: center;
+                                                                justify-content: flex-end;
+                                                                align-items: center;
+                                                                flex-direction: row;">
+                                                                    {% if is_expired %}
+                                                                        <p class="text-danger my-auto">Plan Expired</p>
+                                                                    {% else %}
+                                                                        <button href="" class="btn btn-block btn-soft-primary
+                                                            btn-sm btn-update my-auto mx-2"
+                                                                                data-id="{{ banner.id }}">
+                                                                            <i class="mdi mdi-pencil"></i>
+                                                                        </button>
+                                                                        <button href="" class="btn btn-block btn-soft-danger
+                                                                            btn-sm my-auto mx-2
+                                                                            deleteConfirmModalClass"
+                                                                                data-value="{{ banner.id }}"
+                                                                                data-bs-toggle="modal"
+                                                                                data-bs-target="#deleteConfirmModal"
+                                                                                data-id="{{ banner.id }}">
+                                                                            <i class="mdi mdi-trash-can"></i>
+                                                                        </button>
+                                                                    {% endif %}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div><!-- end row -->
+
+                            {# -------------------------------------Contents end------------------------------------- #}
+                        </div>
+
+                        <!--end row-->
+                    </div> <!-- end .h-100-->
+                </div> <!-- end col -->
+            </div>
+
+            {% include 'dashboard/includes/modals/add.html' with title="Featured Space" %}
+
+            {% include "dashboard/includes/modals/update.html" with title="Featured Space" %}
+
+            {% include "dashboard/includes/modals/delete.html" with title1="This Featured Space" title2="Featured Space" %}
+
+        </div>
+        <!-- container-fluid -->
+    </div>
+
+
+{% endblock content %}
+
+{% block js %}
+
+    <script src="{% static 'dashboard/assets/libs/sweetalert2/sweetalert2.min.js' %}"></script>
+    <script src="{% static 'dashboard/assets/libs/apexcharts/apexcharts.min.js' %}"></script>
+    <script src="{% static 'dashboard/assets/js/pages/modal.init.js' %}"></script>
+
+{% endblock js %}
+
+{% block script %}
+
+
+    <script>
+        $('#addModalForm').attr('action', '{% url 'dashboard-add-featured-space' %}')
+    </script>
+
+    <script>
+        $(function () {
+            $(".btn-update").click(function () {
+                $('#updateModal').modal('toggle');
+                var id = $(this).data("id")
+                var update_url = '/update_featured_space/' + id + '/'
+                $('#update-form').attr('action', update_url)
+                $.ajax({
+                    type: 'GET',
+                    url: update_url,
+                    beforeSend: function () {
+                        $('#update-form-box').addClass('hidden');
+                        $('#btn-modal-update').addClass('hidden');
+                        $('#update-loading').removeClass('hidden');
+                    },
+                    success: function (response) {
+                        $('#update-form-box').removeClass('hidden');
+                        $('#btn-modal-update').removeClass('hidden');
+                        $('#update-loading').addClass('hidden');
+                        $('#update-form-box').html(response)
+                    },
+                    error: function (error) {
+                        alert(error)
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                })
+            });
+        });
+    </script>
+
+
+    <script>
+        $('.deleteConfirmModalClass').click(function () {
+            $('#delete-record').data('value', $(this).data('value'))
+            $('#delete-record').click(function () {
+                $.ajax({
+                    url: '/delete_featured_space/' + $(this).data('value') + '/',
+                    type: 'POST',
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                    },
+                    success: function (data) {
+                        window.location.reload();
+                    }
+                })
+            })
+        })
+    </script>
+
+
+{% endblock script %}
