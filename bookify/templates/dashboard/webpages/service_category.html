@@ -1,0 +1,183 @@
+
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block css %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
+    <link href="{% static 'dashboard/assets/libs/sweetalert2/sweetalert2.min.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'dashboard/assets/libs/swiper/swiper-bundle.min.css' %}" rel="stylesheet" type="text/css"/>
+{% endblock css %}
+
+{% block style %}
+    <style>
+        .form-group {
+            margin-top: 1rem;
+        }
+        .table {
+            border-collapse: collapse;
+        }
+        .table th, .table td {
+            border: 1px solid #dee2e6;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .table thead th {
+            border-bottom: 2px solid #dee2e6;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .card {
+            border: 2px solid #e0e0e0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .card-body {
+            border-top: 1px solid #e0e0e0;
+        }
+    </style>
+{% endblock style %}
+
+{% block content %}
+    <div class="page-content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                        <h4 class="mb-sm-0">Service Category Manager</h4>
+                        <div class="page-title-right">
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item">Dashboard</li>
+                                <li class="breadcrumb-item">Services</li>
+                                <li class="breadcrumb-item active">Categories</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <div class="h-100">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="d-flex align-items-lg-center flex-lg-row flex-column">
+                                    <div class="flex-grow-1"></div>
+                                    <div class="mt-3 mt-lg-0"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 pb-3">
+                            <div class="m-1">
+                                <div class="card rounded shadow">
+                                    <div class="card-header" style="display: flex; align-content: center; align-items: center; justify-content: flex-end;">
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
+                                            Add Category
+                                        </button>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-sm w-100" id="DatatableID">
+                                            <thead>
+                                                <tr class="text-uppercase bg-light">
+                                                    <th class="align-middle">ID</th>
+                                                    <th class="align-middle">Category Name</th>
+                                                    <th class="align-middle">Description</th>
+                                                    <th class="align-middle">Created</th>
+                                                    <th class="align-middle">Actions</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% include 'dashboard/includes/modals/add.html' with title="Service Category" %}
+            {% include "dashboard/includes/modals/update.html" with title="Service Category" %}
+            {% include "dashboard/includes/modals/delete.html" with title1="This Category" title2="Category" %}
+
+        </div>
+    </div>
+{% endblock content %}
+
+{% block js %}
+    <script src="{% static 'dashboard/assets/libs/sweetalert2/sweetalert2.min.js' %}"></script>
+    <script src="{% static 'dashboard/assets/libs/apexcharts/apexcharts.min.js' %}"></script>
+    <script src="{% static 'dashboard/assets/js/pages/modal.init.js' %}"></script>
+{% endblock js %}
+
+{% block script %}
+    <script>
+        $('#addModalForm').attr('action', '{% url 'dashboard-service-categories-add' %}')
+    </script>
+
+    <script>
+        var dataTable = $('#DatatableID').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ajax": {
+                "url": "{% url 'dashboard-service-categories-list' %}",
+                "type": "GET",
+                "data": function (d) {
+                    d.search = {
+                        "value": $('input[type="search"]').val(),
+                        "regex": false
+                    };
+                }
+            },
+            "columns": [
+                {"data": "id"},
+                {"data": "name"},
+                {"data": "description"},
+                {"data": "created"},
+                {
+                    "data": "id",
+                    "orderable": false,
+                    "searchable": false,
+                    "render": function (data, type, row, meta) {
+                        return `
+                            <div class="d-flex gap-2">
+                                <a href="javascript:void(0);" class="edit-btn" data-id="${data}"><i class="mdi mdi-pencil text-success"></i></a>
+                                <a href="javascript:void(0);" class="delete-btn" data-id="${data}"><i class="mdi mdi-delete text-danger"></i></a>
+                            </div>
+                        `;
+                    }
+                }
+            ],
+            "lengthMenu": [
+                [3,25, 50, 100],
+                [3,25, 50, 100]
+            ],
+            "pageLength": 25,
+            "responsive": true,
+            "scrollX": true,
+            "scrollY": "50vh",
+            "scrollCollapse": true,
+            "ordering": true,
+            "language": {
+                "searchPlaceholder": "Search Categories",
+                "lengthMenu": "Show _MENU_",
+                "zeroRecords": `<span class="text-danger">No data found</span>`,
+                "info": "Showing page _PAGE_ of _PAGES_ (Total records: _TOTAL_)",
+                "infoEmpty": "No records available",
+                "infoFiltered": "(filtered from _MAX_ total records)",
+                "paginate": {
+                    "first": `<i class="mdi mdi-arrow-left"></i>`,
+                    "previous": `<i class="mdi mdi-arrow-left"></i>`,
+                    "last": `<i class="mdi mdi-arrow-right"></i>`,
+                    "next": `<i class="mdi mdi-arrow-right"></i>`
+                }
+            },
+            "columnDefs": [{
+                "className": "text-center align-middle",
+                "targets": "_all"
+            }]
+        });
+    </script>
+{% endblock script %}

@@ -16,13 +16,20 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path,include
-from dashboard.views import authentication
+from django.urls import path
+from dashboard.views import authentication,users,service_category
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
     path("", authentication.login, name = 'dashboard-login'),
     path("home/", authentication.home, name = 'dashboard-home'),
+    path('user_manager/', users.user_manager, name = "dashboard-user-manager"),
+    path('users_list/',users.users_list, name = 'dashboard-users-list'),
+    # path('users_view/<int:pk>/',views.user_view, name = 'dashboard-users-view'),
+    path('service-categories/', service_category.service_category_manager, name='dashboard-service-category-manager'),
+    path('service-categories/list/', service_category.service_category_list, name='dashboard-service-categories-list'),
+    path('service-categories/add/', service_category.service_category_add, name='dashboard-service-categories-add'),
+    path('service-categories/edit/<int:pk>/', service_category.service_category_edit, name='service_category_edit'),
+    
     
     
 ]

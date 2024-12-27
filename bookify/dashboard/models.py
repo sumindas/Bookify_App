@@ -91,20 +91,24 @@ class TempUser(models.Model):
     full_name = models.CharField(max_length=255, blank=True, null=True)
     phone = models.CharField(max_length=15, blank=True, null=True)
     verified = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
     is_deleted = models.BooleanField(default=False)
 
-class OTP(models.Model):
+class Otp(models.Model):
     code = models.CharField(max_length=6)
     request_id = models.CharField(max_length=255, unique=True)
     requested_by_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, blank=True, null=True)
     temp_user = models.ForeignKey(TempUser, on_delete=models.CASCADE, blank=True, null=True)
     verified = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(default=timezone.now)
 
 class ServiceCategory(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
+    icon = models.ImageField(upload_to='business_type_icons/', null=True, blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    is_deleted = models.BooleanField(default = False)
+    
 
 class ServiceProvider(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -117,6 +121,22 @@ class ServiceProvider(models.Model):
     verification_documents = models.FileField(upload_to='verification_docs/', blank=True, null=True)
     opening_time = models.TimeField()
     closing_time = models.TimeField()
+    team_size = models.IntegerField(default=1, help_text="Number of staff in the team.")
+    booking_preferences = models.CharField(
+        max_length=50,
+        choices=[
+            ('same-day', 'Same Day'),
+            ('same-day-1', 'Same Day and 1 Day Before'),
+            ('same-day-2', 'Same Day and 2 Days Before'),
+            ('same-day-3', 'Same Day and 3 Days Before'),
+        ],
+        default='same-day'
+    )
+    onboarding_progress = models.IntegerField(default=0)  
+    is_onboarding_complete = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return self.category.name or self.user.username
 
 class ShopSlot(models.Model):
     provider = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE)
@@ -176,7 +196,7 @@ class Review(models.Model):
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
     rating = models.PositiveIntegerField()
     review_text = models.TextField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
 class UserFavorites(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -201,4 +221,4 @@ class Refund(models.Model):
     payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
     refund_amount = models.DecimalField(max_digits=10, decimal_places=2)
     reason = models.TextField()
-    refunded_at = models.DateTimeField(auto_now_add=True)
+    refunded_at = models.DateTimeField(default=timezone.now)

@@ -37,10 +37,17 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link menu-link {% if request.path == "/user_manager/" %}active{% endif %} "
-                       href="">
+                       href="{% url 'dashboard-user-manager' %}">
                         <i class="mdi mdi-account"></i> <span data-key="t-space">Manage Users</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                                    <a class="nav-link menu-link {% if request.path == "/service_category/" %}active{% endif %} "
+                                       href="{% url 'dashboard-service-category-manager' %}">
+                                        <i class="mdi mdi-format-list-bulleted"></i> <span data-key="t-space">Service Category</span>
+                                    </a>
+                </li>
+                
                 <li class="nav-item">
                     <a class="nav-link menu-link {% if request.path == "/manage_booking/" %}active{% endif %} "
                        href="">

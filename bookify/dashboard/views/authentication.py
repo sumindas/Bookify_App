@@ -38,15 +38,12 @@ def home(request):
         return redirect("dashboard-login")
     else:
         current_hour = datetime.now().hour
-        print(current_hour)
         if 5 <= current_hour < 12:
             greeting = "Good Morning"
         elif 12 <= current_hour < 18:
             greeting = "Good Afternoon"
         else:
             greeting = "Good Evening"
-
-
 
         context = {
             'user': request.user,

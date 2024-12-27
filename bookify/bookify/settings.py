@@ -49,8 +49,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'rest_framework',
+    'rest_framework_simplejwt',
     "crispy_forms",
+    "crispy_bootstrap5",
     "dashboard",
+    "customer_api",
+    "partner_api"
 ]
 
 MIDDLEWARE = [
@@ -97,7 +102,6 @@ DATABASES = {
         'PORT': env('DB_PORT'),
     }
 }
-
 
 
 # Password validation
@@ -177,6 +181,8 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=60),
 }
 
+CRISPY_TEMPLATE_PACK = "bootstrap5"  
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 AUTH_USER_MODEL = "dashboard.CustomUser"
 
