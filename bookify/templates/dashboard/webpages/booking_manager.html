@@ -1,0 +1,287 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
+    <link href="{% static 'dashboard/assets/libs/sweetalert2/sweetalert2.min.css' %}" rel="stylesheet" type="text/css"/>
+{% endblock css %}
+
+{% block content %}
+<div class="page-content">
+    <div class="container-fluid">
+        <!-- start page title -->
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                    <h4 class="mb-sm-0">Manage Bookings</h4>
+                    <div class="page-title-right">
+                        <ol class="breadcrumb m-0">
+                            <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
+                            <li class="breadcrumb-item active">Manage Bookings</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="h-100">
+                    <div class="row mb-3 pb-1">
+                        <div class="col-12">
+                            <div class="d-flex align-items-lg-center flex-lg-row flex-column">
+                                <div class="flex-grow-1">
+                                    <h4 class="fs-16 mb-1">All Bookings</h4>
+                                    <p class="text-muted mb-0">View and manage all bookings</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card card-animate">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1 overflow-hidden">
+                                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">
+                                                Pending Bookings</p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-end justify-content-between mt-4">
+                                        <div>
+                                            <h4 class="fs-22 fw-semibold ff-secondary mb-4">
+                                                <span id="pending-count">0</span>
+                                            </h4>
+                                        </div>
+                                        <div class="avatar-sm flex-shrink-0">
+                                            <span class="avatar-title bg-soft-warning rounded fs-3">
+                                                <i class="bx bx-time-five text-warning"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card card-animate">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1 overflow-hidden">
+                                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">
+                                                Confirmed Bookings</p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-end justify-content-between mt-4">
+                                        <div>
+                                            <h4 class="fs-22 fw-semibold ff-secondary mb-4">
+                                                <span id="confirmed-count">0</span>
+                                            </h4>
+                                        </div>
+                                        <div class="avatar-sm flex-shrink-0">
+                                            <span class="avatar-title bg-soft-success rounded fs-3">
+                                                <i class="bx bx-check-circle text-success"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card card-animate">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1 overflow-hidden">
+                                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">
+                                                Cancelled Bookings</p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-end justify-content-between mt-4">
+                                        <div>
+                                            <h4 class="fs-22 fw-semibold ff-secondary mb-4">
+                                                <span id="cancelled-count">0</span>
+                                            </h4>
+                                        </div>
+                                        <div class="avatar-sm flex-shrink-0">
+                                            <span class="avatar-title bg-soft-danger rounded fs-3">
+                                                <i class="bx bx-x-circle text-danger"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card card-animate">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1 overflow-hidden">
+                                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">
+                                                Total Revenue</p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-end justify-content-between mt-4">
+                                        <div>
+                                            <h4 class="fs-22 fw-semibold ff-secondary mb-4">₹
+                                                <span id="total-revenue">0</span>
+                                            </h4>
+                                        </div>
+                                        <div class="avatar-sm flex-shrink-0">
+                                            <span class="avatar-title bg-soft-info rounded fs-3">
+                                                <i class="bx bx-wallet text-info"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-body">
+                                    <table id="bookings-table" class="table table-bordered dt-responsive nowrap table-striped align-middle" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Customer</th>
+                                                <th>Provider</th>
+                                                <th>Service</th>
+                                                <th>Scheduled Time</th>
+                                                <th>Status</th>
+                                                <th>Payment</th>
+                                                <th>Price</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block js %}
+    <script src="{% static 'dashboard/assets/libs/sweetalert2/sweetalert2.min.js' %}"></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var table = $('#bookings-table').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: '{% url "dashboard-booking-list" %}',
+                columns: [
+                    {data: 'id'},
+                    {data: 'customer'},
+                    {data: 'provider'},
+                    {data: 'service'},
+                    {data: 'scheduled_time'},
+                    {
+                        data: 'status',
+                        render: function(data, type, row) {
+                            let badgeClass = {
+                                'pending': 'badge bg-warning',
+                                'confirmed': 'badge bg-success',
+                                'cancelled': 'badge bg-danger'
+                            }[data] || 'badge bg-secondary';
+                            
+                            return `<span class="${badgeClass}">${data}</span>`;
+                        }
+                    },
+                    {
+                        data: 'payment_status',
+                        render: function(data, type, row) {
+                            let badgeClass = {
+                                'completed': 'badge bg-success',
+                                'pending': 'badge bg-warning',
+                                'failed': 'badge bg-danger'
+                            }[data] || 'badge bg-secondary';
+                            
+                            return `<span class="${badgeClass}">${data}</span>`;
+                        }
+                    },
+                    {
+                        data: 'total_price',
+                        render: function(data, type, row) {
+                            return '₹' + data.toFixed(2);
+                        }
+                    },
+                    {data: 'actions', orderable: false}
+                ],
+                order: [[0, 'desc']],
+                drawCallback: function(settings) {
+                    let api = this.api();
+                    let data = api.rows().data();
+                    
+                    // Reset counters
+                    let pending = 0;
+                    let confirmed = 0;
+                    let cancelled = 0;
+                    let revenue = 0;
+                    
+                    // Count statuses and calculate revenue
+                    data.each(function(row) {
+                        if(row.status === 'pending') pending++;
+                        else if(row.status === 'confirmed') {
+                            confirmed++;
+                            if(row.payment_status === 'completed') {
+                                revenue += row.total_price;
+                            }
+                        }
+                        else if(row.status === 'cancelled') cancelled++;
+                    });
+                    
+                    // Update counters
+                    $('#pending-count').text(pending);
+                    $('#confirmed-count').text(confirmed);
+                    $('#cancelled-count').text(cancelled);
+                    $('#total-revenue').text(revenue.toFixed(2));
+                }
+            });
+        });
+
+        function viewBooking(id) {
+            window.location.href = `/dashboard/bookings/${id}/view`;
+        }
+
+        function updateStatus(id, status) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `Do you want to ${status} this booking?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/dashboard/bookings/${id}/update-status`,
+                        type: 'POST',
+                        data: {
+                            status: status,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function(response) {
+                            Swal.fire('Success', 'Booking status updated successfully', 'success');
+                            $('#bookings-table').DataTable().ajax.reload();
+                        },
+                        error: function(xhr) {
+                            Swal.fire('Error', xhr.responseJSON?.error || 'Something went wrong', 'error');
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+{% endblock js %}

@@ -1,12 +1,9 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
-{% load crispy_forms_tags %}
 {% load humanize %}
 
 {% block css %}
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
     <link href="{% static 'dashboard/assets/libs/sweetalert2/sweetalert2.min.css' %}" rel="stylesheet" type="text/css"/>
-    <link href="{% static 'dashboard/assets/libs/swiper/swiper-bundle.min.css' %}" rel="stylesheet" type="text/css"/>
 {% endblock css %}
 
 {% block style %}
@@ -34,9 +31,6 @@
         .booking-info-value {
             color: #6c757d;
         }
-        .service-list-item {
-            background-color: #f8f9fa;
-        }
         .status-badge {
             font-size: 0.875rem;
             padding: 0.5em 0.75em;
@@ -53,7 +47,7 @@
                         <h4 class="mb-sm-0">Booking Details</h4>
                         <div class="page-title-right">
                             <ol class="breadcrumb m-0">
-                                <li class="breadcrumb-item"><a href="">Dashboard</a></li>
+                                <li class="breadcrumb-item"><a href="{% url 'dashboard-booking-manager' %}">Bookings</a></li>
                                 <li class="breadcrumb-item active">Booking Details</li>
                             </ol>
                         </div>
@@ -64,8 +58,18 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div class="card booking-details-card">
-                        <div class="card-header">
+                        <div class="card-header d-flex justify-content-between align-items-center">
                             <h4 class="card-title mb-0">Booking Information - #{{ booking.id }}</h4>
+                            {% if booking.status == 'pending' %}
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-success btn-sm" onclick="updateStatus({{ booking.id }}, 'confirmed')">
+                                        <i class="ri-check-line align-bottom"></i> Confirm
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="updateStatus({{ booking.id }}, 'cancelled')">
+                                        <i class="ri-close-line align-bottom"></i> Cancel
+                                    </button>
+                                </div>
+                            {% endif %}
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -73,40 +77,40 @@
                                     <div class="booking-info-item">
                                         <div class="row">
                                             <div class="col-sm-4">
-                                                <p class="booking-info-label mb-0">User</p>
+                                                <p class="booking-info-label mb-0">Customer</p>
                                             </div>
                                             <div class="col-sm-8">
-                                                <p class="booking-info-value mb-0">{{ booking.user.name }}</p>
+                                                <p class="booking-info-value mb-0">{{ booking.customer.email }}</p>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="booking-info-item">
                                         <div class="row">
                                             <div class="col-sm-4">
-                                                <p class="booking-info-label mb-0"> Space</p>
+                                                <p class="booking-info-label mb-0">Service Provider</p>
                                             </div>
                                             <div class="col-sm-8">
-                                                <p class="booking-info-value mb-0">{{ booking.space.name }}</p>
+                                                <p class="booking-info-value mb-0">{{ booking.provider.shop_name }}</p>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="booking-info-item">
                                         <div class="row">
                                             <div class="col-sm-4">
-                                                <p class="booking-info-label mb-0">Date</p>
+                                                <p class="booking-info-label mb-0">Service</p>
                                             </div>
                                             <div class="col-sm-8">
-                                                <p class="booking-info-value mb-0">{{ booking.date|date:"F d, Y" }}</p>
+                                                <p class="booking-info-value mb-0">{{ booking.service.name }}</p>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="booking-info-item">
                                         <div class="row">
                                             <div class="col-sm-4">
-                                                <p class="booking-info-label mb-0">Time Slot</p>
+                                                <p class="booking-info-label mb-0">Scheduled Time</p>
                                             </div>
                                             <div class="col-sm-8">
-                                                <p class="booking-info-value mb-0">{{ booking.time_slot.start_time|time:"H:i" }} - {{ booking.time_slot.end_time|time:"H:i" }}</p>
+                                                <p class="booking-info-value mb-0">{{ booking.scheduled_time|date:"F d, Y H:i" }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -118,7 +122,7 @@
                                                 <p class="booking-info-label mb-0">Booking Type</p>
                                             </div>
                                             <div class="col-sm-8">
-                                                <p class="booking-info-value mb-0">{{ booking.get_booking_type_display }}</p>
+                                                <p class="booking-info-value mb-0">{{ booking.get_booking_type_display|default:"Standard" }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -128,58 +132,74 @@
                                                 <p class="booking-info-label mb-0">Status</p>
                                             </div>
                                             <div class="col-sm-8">
-                                                <span class="badge status-badge bg-{{ booking.status|yesno:'success,danger' }}">{{ booking.get_status_display }}</span>
+                                                <span class="badge {% if booking.status == 'confirmed' %}bg-success{% elif booking.status == 'cancelled' %}bg-danger{% else %}bg-warning{% endif %}">
+                                                    {{ booking.get_status_display }}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="booking-info-item">
                                         <div class="row">
                                             <div class="col-sm-4">
-                                                <p class="booking-info-label mb-0">Total Amount</p>
+                                                <p class="booking-info-label mb-0">Service Price</p>
                                             </div>
                                             <div class="col-sm-8">
-                                                <p class="booking-info-value mb-0">₹ {{ booking.total|floatformat:2 }}</p>
+                                                <p class="booking-info-value mb-0">₹{{ booking.total_service_price|floatformat:2 }}</p>
                                             </div>
                                         </div>
                                     </div>
+                                    {% if booking.booking_fee %}
                                     <div class="booking-info-item">
                                         <div class="row">
                                             <div class="col-sm-4">
-                                                <p class="booking-info-label mb-0">Paid Amount</p>
+                                                <p class="booking-info-label mb-0">Booking Fee</p>
                                             </div>
                                             <div class="col-sm-8">
-                                                <p class="booking-info-value mb-0">₹ {{ booking.paid_amount|floatformat:2 }}</p>
+                                                <p class="booking-info-value mb-0">₹{{ booking.booking_fee|floatformat:2 }}</p>
                                             </div>
                                         </div>
                                     </div>
+                                    {% endif %}
                                 </div>
                             </div>
-        
-                            {% if booking.services.exists %}
+
+                            {% if payment %}
                             <div class="mt-4">
-                                <h5 class="fw-semibold">Booked Services</h5>
-                                <ul class="list-group">
-                                    {% for service in booking.services.all %}
-                                    <li class="list-group-item service-list-item d-flex justify-content-between align-items-center">
-                                        {{ service.title }}
-                                        <span class="badge bg-primary rounded-pill">₹ {{ service.cost|floatformat:2 }}</span>
-                                    </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                            {% endif %}
-        
-                            {% if booking.address %}
-                            <div class="mt-4">
-                                <h5 class="fw-semibold">Address</h5>
-                                <p class="booking-info-value">{{ booking.address }}</p>
-                            </div>
-                            {% endif %}
-        
-                            {% if booking.used_coupon_code %}
-                            <div class="mt-4">
-                                <h5 class="fw-semibold">Used Coupon Code</h5>
-                                <p class="booking-info-value">{{ booking.used_coupon_code }}</p>
+                                <h5 class="fw-semibold">Payment Information</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered mb-0">
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row" style="width: 200px;">Payment Method</th>
+                                                <td>{{ payment.payment_method.name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Payment Type</th>
+                                                <td>{{ payment.get_payment_type_display }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Amount</th>
+                                                <td>₹{{ payment.amount|floatformat:2 }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Status</th>
+                                                <td>
+                                                    <span class="badge {% if payment.status == 'completed' %}bg-success{% elif payment.status == 'failed' %}bg-danger{% else %}bg-warning{% endif %}">
+                                                        {{ payment.get_status_display }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Transaction Reference</th>
+                                                <td>{{ payment.transaction_reference }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Transaction Date</th>
+                                                <td>{{ payment.transaction_date|date:"F d, Y H:i" }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                             {% endif %}
                         </div>
@@ -192,14 +212,36 @@
 
 {% block js %}
     <script src="{% static 'dashboard/assets/libs/sweetalert2/sweetalert2.min.js' %}"></script>
-    <script src="{% static 'dashboard/assets/libs/apexcharts/apexcharts.min.js' %}"></script>
-    <script src="{% static 'dashboard/assets/js/pages/modal.init.js' %}"></script>
-{% endblock js %}
-
-{% block script %}
     <script>
-        $(function () {
-            // Your existing JavaScript code here
-        });
+        function updateStatus(id, status) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `Do you want to ${status} this booking?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/dashboard/bookings/${id}/update-status`,
+                        type: 'POST',
+                        data: {
+                            status: status,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function(response) {
+                            Swal.fire('Success', 'Booking status updated successfully', 'success')
+                            .then(() => {
+                                window.location.reload();
+                            });
+                        },
+                        error: function(xhr) {
+                            Swal.fire('Error', xhr.responseJSON?.error || 'Something went wrong', 'error');
+                        }
+                    });
+                }
+            });
+        }
     </script>
-{% endblock script %}
+{% endblock js %}

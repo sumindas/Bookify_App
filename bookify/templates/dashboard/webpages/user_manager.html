@@ -2,8 +2,6 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
-
-
 {% block css %}
 
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
@@ -43,7 +41,6 @@
           }
       </style>
   {% endblock style %}
-
 
   {% block content %}
 
@@ -96,7 +93,6 @@
                                        align-content: center;
                                        align-items: center;
                                        justify-content: flex-end;">
-                                      
                                     </div>
                                     <div class="card-body">
                                         <table class="table table-sm w-100" id="DatatableID">
@@ -105,9 +101,9 @@
                                                 <th class="align-middle">id</th>
                                                 <th class="align-middle">name</th>
                                                 <th class="align-middle">phone</th>
-                                                <th class="align-middle">created</th>
+                                                <th class="align-middle">Joined Date</th>
                                                 <th class="align-middle">action</th>
-                                                </tr>
+                                            </tr>
                                             </thead>
                                         </table>
                                     </div>
@@ -122,8 +118,6 @@
                     </div> <!-- end .h-100-->
                 </div> <!-- end col -->
             </div>
-
-          
 
             {% include 'dashboard/includes/modals/add.html' with title="Banner" %}
 
@@ -160,11 +154,9 @@
                 </div>
             </div>
 
-
         </div>
         <!-- container-fluid -->
     </div>
-
 
   {% endblock content %}
 
@@ -200,10 +192,20 @@
                   "data": "id",  
                   "orderable": false,
                   "searchable": false,
-                  "render": function (data, type, row, meta) {
+                  "render": function (data, type, row) {
                       return `
-                     <a href="/users_view/${data}/"><i class="mdi mdi-eye"></i></a>            
-                      `;
+                        <div class="dropdown d-inline-block">
+                            <button class="btn btn-soft-secondary btn-sm dropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="ri-more-fill align-middle"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a href="/users/${row.id}/" class="dropdown-item">
+                                        <i class="ri-eye-fill align-bottom me-2 text-muted"></i> View
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>`;
                   }
               }
           ],

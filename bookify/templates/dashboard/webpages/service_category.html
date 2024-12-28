@@ -1,7 +1,7 @@
-
 {% extends 'dashboard/base.html' %}
 {% load static %}
 {% load crispy_forms_tags %}
+
 
 {% block css %}
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
@@ -14,96 +14,149 @@
         .form-group {
             margin-top: 1rem;
         }
-        .table {
-            border-collapse: collapse;
+        #alert-box-top-right {
+            position: absolute;
+            top: 5%;
+            right: 5%;
+            transform: translate(5%, -5%);
         }
-        .table th, .table td {
-            border: 1px solid #dee2e6;
-            text-align: center;
-            vertical-align: middle;
+        .border-red {
+            border: 1px solid #ff0000;
         }
-        .table thead th {
-            border-bottom: 2px solid #dee2e6;
-            text-align: center;
-            vertical-align: middle;
+        .service-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
         }
-        .card {
-            border: 2px solid #e0e0e0;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .card-header {
-            border-bottom: 2px solid #e0e0e0;
+        .service-card.selected {
+            border-color: #589662;
         }
-        .card-body {
-            border-top: 1px solid #e0e0e0;
+        .selection-indicator {
+            display: none;
+            color: #589662;
+            font-weight: bold;
+        }
+        .service-card.selected .selection-indicator {
+            display: inline-block;
+        }
+        #searchServiceInput {
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+        .service-card-container {
+            display: block;
         }
     </style>
 {% endblock style %}
 
 {% block content %}
-    <div class="page-content">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-12">
-                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                        <h4 class="mb-sm-0">Service Category Manager</h4>
-                        <div class="page-title-right">
-                            <ol class="breadcrumb m-0">
-                                <li class="breadcrumb-item">Dashboard</li>
-                                <li class="breadcrumb-item">Services</li>
-                                <li class="breadcrumb-item active">Categories</li>
-                            </ol>
-                        </div>
+<div class="page-content">
+    <div class="container-fluid">
+        <!-- start page title -->
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                    <h4 class="mb-sm-0">Service Categories</h4>
+                    <div class="page-title-right">
+                        <ol class="breadcrumb m-0">
+                            <li class="breadcrumb-item"><a href="/" class="text-primary">Admin</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard-service-category-manager' %}" class="text-primary">Services</a></li>
+                            <li class="breadcrumb-item active">Manage</li>
+                        </ol>
                     </div>
                 </div>
             </div>
-
-            <div class="row">
-                <div class="col">
-                    <div class="h-100">
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="d-flex align-items-lg-center flex-lg-row flex-column">
-                                    <div class="flex-grow-1"></div>
-                                    <div class="mt-3 mt-lg-0"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="pt-4 pb-3">
-                            <div class="m-1">
-                                <div class="card rounded shadow">
-                                    <div class="card-header" style="display: flex; align-content: center; align-items: center; justify-content: flex-end;">
-                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
-                                            Add Category
-                                        </button>
-                                    </div>
-                                    <div class="card-body">
-                                        <table class="table table-sm w-100" id="DatatableID">
-                                            <thead>
-                                                <tr class="text-uppercase bg-light">
-                                                    <th class="align-middle">ID</th>
-                                                    <th class="align-middle">Category Name</th>
-                                                    <th class="align-middle">Description</th>
-                                                    <th class="align-middle">Created</th>
-                                                    <th class="align-middle">Actions</th>
-                                                </tr>
-                                            </thead>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {% include 'dashboard/includes/modals/add.html' with title="Service Category" %}
-            {% include "dashboard/includes/modals/update.html" with title="Service Category" %}
-            {% include "dashboard/includes/modals/delete.html" with title1="This Category" title2="Category" %}
-
         </div>
+        <!-- end page title -->
+        
+        <div class="row">
+            <div class="col">
+                <div class="h-100">
+                    <div class="pt-4 pb-3">
+                        <div class="m-1">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-end align-items-center">
+                                    <button class="btn btn-soft-success" data-bs-toggle="modal" data-bs-target="#addModal">
+                                        <i class="mdi mdi-plus-thick"></i> Add Service Category
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="w-50 mx-auto mb-5">
+                                        <form action="" method="GET" class="search-form">
+                                            <div class="input-group">
+                                                <input type="search" 
+                                                       class="form-control" 
+                                                       name="search" 
+                                                       placeholder="Search by name or description..." 
+                                                       value="{{ search_query }}"
+                                                       autocomplete="off">
+                                                <button class="btn btn-primary" type="submit">
+                                                    <i class="mdi mdi-magnify"></i> Search
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="row">
+                                        {% if categories %}
+                                            {% for category in categories %}
+                                                <div class="col-md-3">
+                                                    <div class="card shadow-lg m-2">
+                                                        {% if category.icon and category.icon.url %}
+                                                            <img class="card-img-top" src="{{ category.icon.url }}" style="height: 10rem; object-fit: contain;" alt="{{ category.name }}">
+                                                            {% else %}
+                                                            <div class="text-center p-3" style="height: 10rem; display: flex; align-items: center; justify-content: center; background-color: #f8f9fa;">
+                                                                <i class="mdi mdi-package-variant-closed" style="font-size: 4rem; color: #6c757d;"></i>
+                                                            </div>
+                                                        {% endif %}
+                                                        <div class="card-body">
+                                                            <h5 class="card-title">{{ category.name }}</h5>
+                                                            <p class="card-text">{{ category.description|truncatechars:100 }}</p>
+                                                            <div class="row">
+                                                                
+                                                                <div class="col-6">
+                                                                    <button class="w-100 btn btn-outline-primary btn-sm btn-update me-2" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit" data-id="{{ category.id }}">
+                                                                        <i class="mdi mdi-pencil"></i> Edit
+                                                                    </button>
+                                                                </div>
+                                                                    <div class="col-6">
+                                                                        <button class="w-100 btn btn-outline-danger btn-sm btn-delete" data-id="{{ category.id }}" data-name="{{ category.name }}">
+                                                                            <i class="mdi mdi-trash-can"></i> Delete
+                                                                        </button>                                                                    
+                                                                    </div>    
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="col-12">
+                                                <div class="text-center text-danger">
+                                                    <p>No service categories found!</p>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% include 'dashboard/includes/modals/add.html' with title="Service Category" %}
+
+        {% include "dashboard/includes/modals/update.html" with title="Service Category" %}
+
+        {% include "dashboard/includes/modals/delete.html" with title1="a Service Category" title2="Service Category" %}
+
+
     </div>
+</div>
 {% endblock content %}
 
 {% block js %}
@@ -113,71 +166,78 @@
 {% endblock js %}
 
 {% block script %}
-    <script>
-        $('#addModalForm').attr('action', '{% url 'dashboard-service-categories-add' %}')
-    </script>
 
-    <script>
-        var dataTable = $('#DatatableID').DataTable({
-            "processing": true,
-            "serverSide": true,
-            "ajax": {
-                "url": "{% url 'dashboard-service-categories-list' %}",
-                "type": "GET",
-                "data": function (d) {
-                    d.search = {
-                        "value": $('input[type="search"]').val(),
-                        "regex": false
-                    };
+
+<script>
+    $(document).ready(function () {
+        $('.noty-tost').click();
+        $('#addModalForm').attr('action', '{% url 'dashboard-service-categories-add' %}');
+
+        // Update Service Category
+        $('.btn-update').click(function(e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            var update_url = '{% url "dashboard-service-categories-edit" 0 %}'.replace('0', id);
+    
+            $('#updateModal').modal('show');
+            $('#update-form').attr('action', update_url);
+    
+            $.ajax({
+                type: 'GET',
+                url: update_url,
+                success: function (response) {
+                    $('#update-form-box').html(response);
                 }
-            },
-            "columns": [
-                {"data": "id"},
-                {"data": "name"},
-                {"data": "description"},
-                {"data": "created"},
-                {
-                    "data": "id",
-                    "orderable": false,
-                    "searchable": false,
-                    "render": function (data, type, row, meta) {
-                        return `
-                            <div class="d-flex gap-2">
-                                <a href="javascript:void(0);" class="edit-btn" data-id="${data}"><i class="mdi mdi-pencil text-success"></i></a>
-                                <a href="javascript:void(0);" class="delete-btn" data-id="${data}"><i class="mdi mdi-delete text-danger"></i></a>
-                            </div>
-                        `;
-                    }
-                }
-            ],
-            "lengthMenu": [
-                [3,25, 50, 100],
-                [3,25, 50, 100]
-            ],
-            "pageLength": 25,
-            "responsive": true,
-            "scrollX": true,
-            "scrollY": "50vh",
-            "scrollCollapse": true,
-            "ordering": true,
-            "language": {
-                "searchPlaceholder": "Search Categories",
-                "lengthMenu": "Show _MENU_",
-                "zeroRecords": `<span class="text-danger">No data found</span>`,
-                "info": "Showing page _PAGE_ of _PAGES_ (Total records: _TOTAL_)",
-                "infoEmpty": "No records available",
-                "infoFiltered": "(filtered from _MAX_ total records)",
-                "paginate": {
-                    "first": `<i class="mdi mdi-arrow-left"></i>`,
-                    "previous": `<i class="mdi mdi-arrow-left"></i>`,
-                    "last": `<i class="mdi mdi-arrow-right"></i>`,
-                    "next": `<i class="mdi mdi-arrow-right"></i>`
-                }
-            },
-            "columnDefs": [{
-                "className": "text-center align-middle",
-                "targets": "_all"
-            }]
+            });
         });
-    </script>
+
+        $('#update-form').on('submit', function(e) {
+            e.preventDefault();
+            var form = $(this);
+            var url = form.attr('action');
+            
+            var formData = new FormData(this);
+            
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $('#updateModal').modal('hide');
+                    window.location.href = '{% url "dashboard-service-category-manager" %}';
+                }
+            });
+        });
+
+        // Delete Service Category
+        $('.btn-delete').click(function(e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            var delete_url = '{% url "dashboard-service-categories-delete" 0 %}'.replace('0', id);
+    
+            $('#deleteModal').modal('show');
+            $('#deleteModal form').off('submit').on('submit', function(e) {
+                e.preventDefault();
+                
+                $.ajax({
+                    url: delete_url,
+                    type: 'POST',
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function () {
+                        $('#deleteModal').modal('hide');
+                        window.location.reload();
+                    }
+                });
+            });
+        });
+
+        
+    });
+</script>
+
+
 {% endblock script %}

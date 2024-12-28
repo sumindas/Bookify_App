@@ -1,18 +1,31 @@
-
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from dashboard.forms.service_category import ServiceCategoryForm
 from dashboard.models import ServiceCategory
 from django.http import JsonResponse
 from django.db.models import Q
+from django.template.loader import render_to_string
 
 @login_required
 def service_category_manager(request):
-    categories = ServiceCategory.objects.all()
+    search_query = request.GET.get('search', '')
+    categories = ServiceCategory.objects.filter(is_deleted=False)
+    
+    if search_query:
+        categories = categories.filter(
+            Q(name__icontains=search_query) |
+            Q(description__icontains=search_query)
+        )
+    
+    categories = categories.order_by('-id')
+    
+    form = ServiceCategoryForm()
     context = {
         'categories': categories,
-        'title': 'Service Categories'
+        'title': 'Service Categories',
+        'form': form,
+        'search_query': search_query
     }
     return render(request, 'dashboard/webpages/service_category.html', context)
 
@@ -67,34 +80,52 @@ def service_category_list(request):
 @login_required
 def service_category_add(request):
     if request.method == 'POST':
-        form = ServiceCategoryForm(request.POST)
+        form = ServiceCategoryForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, 'Service category added successfully!')
-            return redirect('dashboard:service_category_list')
+            return redirect('dashboard-service-category-manager')
+        else:
+            for field, errors in form.errors.items():
+                e = 'Field: {} Errors: {}'.format(field, ','.join(errors))
+                messages.error(request, e)
+            return redirect('dashboard-service-category-manager')
     else:
         form = ServiceCategoryForm()
-    
-    context = {
-        'form': form,
-        'title': 'Add Service Category'
-    }
-    return render(request, 'dashboard/service_category/form.html', context)
+        context = {
+            'form': form,
+            'category': category
+        }
+        return render(request, 'dashboard/includes/modals/update_in_modal.html', context)
 
 @login_required
 def service_category_edit(request, pk):
-    category = ServiceCategory.objects.get(pk=pk)
+    category = get_object_or_404(ServiceCategory, pk=pk)
     if request.method == 'POST':
-        form = ServiceCategoryForm(request.POST, instance=category)
+        form = ServiceCategoryForm(request.POST, request.FILES, instance=category)
         if form.is_valid():
             form.save()
             messages.success(request, 'Service category updated successfully!')
-            return redirect('dashboard:service_category_list')
+            return redirect('dashboard-service-category-manager')
+        else:
+            for field, errors in form.errors.items():
+                e = 'Field: {} Errors: {}'.format(field, ','.join(errors))
+                messages.error(request, e)
+            return redirect('dashboard-service-category-manager')
     else:
         form = ServiceCategoryForm(instance=category)
-    
-    context = {
-        'form': form,
-        'title': 'Edit Service Category'
-    }
-    return render(request, 'dashboard/service_category/form.html', context)
+        context = {
+            'form': form,
+            'category': category
+        }
+        return render(request, 'dashboard/includes/modals/update_in_modal.html', context)
+
+@login_required
+def service_category_delete(request, pk):
+    if request.method == 'POST':
+        category = get_object_or_404(ServiceCategory, pk=pk)
+        category.is_deleted = True
+        category.save()
+        messages.success(request, 'Service category deleted successfully!')
+        return redirect('dashboard-service-category-manager')
+    return redirect('dashboard-service-category-manager')

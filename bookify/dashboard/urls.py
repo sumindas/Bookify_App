@@ -17,19 +17,21 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
-from dashboard.views import authentication,users,service_category
+from dashboard.views import authentication, users, service_category, booking
 
 urlpatterns = [
     path("", authentication.login, name = 'dashboard-login'),
     path("home/", authentication.home, name = 'dashboard-home'),
-    path('user_manager/', users.user_manager, name = "dashboard-user-manager"),
-    path('users_list/',users.users_list, name = 'dashboard-users-list'),
-    # path('users_view/<int:pk>/',views.user_view, name = 'dashboard-users-view'),
+    path('users/', users.user_manager, name = "dashboard-user-manager"),
+    path('users/list/', users.users_list, name = 'dashboard-users-list'),
+    path('users/<int:user_id>/', users.user_detail_view, name='dashboard-user-detail'),
     path('service-categories/', service_category.service_category_manager, name='dashboard-service-category-manager'),
     path('service-categories/list/', service_category.service_category_list, name='dashboard-service-categories-list'),
     path('service-categories/add/', service_category.service_category_add, name='dashboard-service-categories-add'),
-    path('service-categories/edit/<int:pk>/', service_category.service_category_edit, name='service_category_edit'),
-    
-    
-    
+    path('service-categories/edit/<int:pk>/', service_category.service_category_edit, name='dashboard-service-categories-edit'),
+    path('service-categories/delete/<int:pk>/', service_category.service_category_delete, name='dashboard-service-categories-delete'),
+    path('bookings/', booking.booking_manager, name='dashboard-booking-manager'),
+    path('bookings/list', booking.booking_list, name='dashboard-booking-list'),
+    path('bookings/<int:pk>/view', booking.booking_view, name='dashboard-booking-view'),
+    path('bookings/<int:pk>/update-status', booking.update_booking_status, name='dashboard-booking-update-status'),
 ]

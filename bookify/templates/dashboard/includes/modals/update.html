@@ -5,26 +5,17 @@
         <div class="modal-content">
             <div class="modal-header border-bottom">
                 <h5 class="modal-title" id="updateModalLabel">Update {{ title }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body pt-0">
-                <form role="form" method="post" enctype="multipart/form-data" action="" id="update-form">
+                <form id="update-form" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <div id="update-form-box" class="hidden">
-                    </div>
-                    <div class="text-center hidden" id="update-loading">
-{#                        <div class="spinner-grow text-light border border-secondary mt-4 mb-2"#}
-{#                             role="status">#}
-{#                            <span class="sr-only">Loading...</span>#}
-{#                        </div>#}
-{#                        <br>#}
-{#                        <span class="text-danger">Error in fetching form!</span>#}
-                    </div>
+                    <div id="update-form-box"></div>
                 </form>
             </div>
             <div class="modal-footer border-top">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
                 <button type="submit" class="btn btn-success" form="update-form">Update</button>
             </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+        </div>
+    </div>
+</div>

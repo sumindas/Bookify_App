@@ -36,54 +36,44 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link menu-link {% if request.path == "/user_manager/" %}active{% endif %} "
+                    <a class="nav-link menu-link {% if request.path == "/dashboard/users/" %}active{% endif %} "
                        href="{% url 'dashboard-user-manager' %}">
                         <i class="mdi mdi-account"></i> <span data-key="t-space">Manage Users</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                                    <a class="nav-link menu-link {% if request.path == "/service_category/" %}active{% endif %} "
+                                    <a class="nav-link menu-link {% if request.path == "/service-categories/" %}active{% endif %} "
                                        href="{% url 'dashboard-service-category-manager' %}">
-                                        <i class="mdi mdi-format-list-bulleted"></i> <span data-key="t-space">Service Category</span>
+                                        <i class="mdi mdi-format-list-bulleted"></i> <span data-key="t-space">Manage Services</span>
                                     </a>
                 </li>
                 
                 <li class="nav-item">
                     <a class="nav-link menu-link {% if request.path == "/manage_booking/" %}active{% endif %} "
                        href="">
-                        <i class="mdi mdi-cash"></i> <span data-key="t-space">Manage Booking</span>
+                        <i class="mdi mdi-cash"></i> <span data-key="t-space">Manage Bookings</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link menu-link {% if request.path == "/manage_space/" %}active{% endif %} "
                        href="">
-                        <i class="mdi mdi-car"></i> <span data-key="t-space">Manage Services</span>
+                        <i class="mdi mdi-store"></i> <span data-key="t-space">Manage Shops</span>
                     </a>
                 </li>
-                {% comment %} <li class="nav-item">
-                    <a class="nav-link menu-link {% if request.path == "/manage_featured_space/" %}active{% endif %} "
-                       href="">
-                        <i class="mdi mdi-car"></i> <span data-key="t-space">Featured Space</span>
-                    </a>
-                </li> {% endcomment %}
+                
                 <li class="nav-item">
                     <a class="nav-link menu-link {% if "banner" in request.path %}active{% endif %} "
                        href="">
                         <i class="mdi mdi-image"></i> <span data-key="t-banner">Manage Banner</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a class="nav-link menu-link {% if "general" in request.path %}active{% endif %} "
                        href="">
                         <i class="mdi mdi-folder"></i> <span data-key="t-banner">Manage Generals</span>
                     </a>
-                </li>
-                 {% comment %} <li class="nav-item">
-                    <a class="nav-link menu-link {% if request.path == "/approve_spaces/" %}active{% endif %} "
-                       href="{% url 'dashboard-approve-spaces' %}">
-                        <i class="mdi mdi-car"></i> <span data-key="t-space">Approve Spaces</span>
-                    </a>
-                </li>  {% endcomment %}
+                </li> -->
+                 
 
                 {% endif %}
 

@@ -1,243 +1,149 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
-{% load crispy_forms_tags %}
-{% load humanize %}
-
-{% block css %}
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
-    <!-- Sweet Alert css-->
-    <link href="{% static 'dashboard/assets/libs/sweetalert2/sweetalert2.min.css' %}" rel="stylesheet" type="text/css"/>
-    <!-- Swiper slider css-->
-    <link href="{% static 'dashboard/assets/libs/swiper/swiper-bundle.min.css' %}" rel="stylesheet" type="text/css"/>
-{% endblock css %}
-
-{% block style %}
-    <style>
-        .form-group {
-            margin-top: 1rem;
-        }
-        .badge {
-            font-size: 0.85rem;
-        }
-        .card-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-        .table th {
-            width: 30%;
-        }
-    </style>
-{% endblock style %}
 
 {% block content %}
-    <div class="page-content">
-        <div class="container-fluid">
-            <div class="profile-foreground position-relative mx-n4 mt-n4">
-                <div class="profile-wid-bg">
-                    <img src="{% static 'images/parking.png' %}" alt="" class="profile-wid-img"/>
+<div class="page-content">
+    <div class="container-fluid">
+        <!-- start page title -->
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                    <h4 class="mb-sm-0">User Details</h4>
+                    <div class="page-title-right">
+                        <ol class="breadcrumb m-0">
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard-user-manager' %}">Users</a></li>
+                            <li class="breadcrumb-item active">Details</li>
+                        </ol>
+                    </div>
                 </div>
             </div>
-            <div class="pt-4 mb-4 mb-lg-3 pb-lg-12">
-                <div class="row g-4 align-content-center align-items-center">
-                    <div class="col-auto">
-                        <div class="avatar-lg">
-                            {% if user.image %}
-                                <img src="{{ user.image.url }}" alt="user-img"
-                                     class="rounded-circle border border-2 border-white" style="object-fit: cover; height: 150px; width: 150px;">
-                            {% else %}
-                                <img src="{% static 'images/404/image_not_found.png' %}" alt="user-img"
-                                     class="rounded-circle border border-2 border-white" style="object-fit: cover; height: 150px; width: 150px;">
-                            {% endif %}
+        </div>
+        <!-- end page title -->
+
+        <div class="row">
+            <!-- User Profile Card -->
+            <div class="col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="text-center">
+                            <div class="profile-user position-relative d-inline-block mx-auto mb-4">
+                                <img src="{{ user.image.url }}" class="rounded-circle avatar-xl img-thumbnail user-profile-image" alt="user-profile-image">
+                            </div>
+                            <h5 class="fs-16 mb-1">{{ user.name|default:user.username }}</h5>
+                            <p class="text-muted mb-0">Customer</p>
                         </div>
-                    </div>
-                    <!--end col-->
-                    <div class="col">
-                        <div class="p-2">
-                            <h3 class="text-white mb-1">{{ user.name }}</h3>
-                            <div class="hstack text-white-50 gap-1">
-                                <div class="me-2">
-                                    <i class="mdi mdi-phone-dial me-1 text-white-75 fs-16 align-middle"></i>
-                                    {{ user.phone }}
-                                </div>
-                                {% if user.mobile %}
-                                    <span class="badge bg-success">Verified</span>
-                                {% else %}
-                                    <span class="badge bg-danger">Not Verified</span>
-                                {% endif %}
+                        <div class="mt-4">
+                            <div class="table-responsive">
+                                <table class="table table-borderless mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <th>Phone :</th>
+                                            <td>{{ user.phone|default:"Not provided" }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Username :</th>
+                                            <td>{{ user.username }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Joined Date :</th>
+                                            <td>{{ user.created|date:"d M Y" }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Status :</th>
+                                            <td>{% if user.is_deleted %}
+                                                <span class="badge bg-danger">Deleted</span>
+                                                {% else %}
+                                                <span class="badge bg-success">Active</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!--end row-->
             </div>
 
-            <div class="row">
-                <div class="col-lg-12">
-                    <div>
-                        <div class="tab-content pt-4 text-muted">
-                            <div class="tab-pane active" id="overview-tab" role="tabpanel">
-                                <div class="row">
-                                    <div class="col-xxl-4">
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <h5 class="card-title mb-3">User Information</h5>
-                                                <div class="table-responsive">
-                                                    <table class="table table-borderless mb-0">
-                                                        <tbody>
-                                                        <tr>
-                                                            <th class="ps-0" scope="row">Full Name:</th>
-                                                            <td class="text-muted">{{ user.name }}</td>
-                                                        </tr>
-                                                        {% if user.username %}
-                                                        <tr>
-                                                            <th class="ps-0" scope="row">Username:</th>
-                                                            <td class="text-muted">{{ user.username }}</td>
-                                                        </tr>
-                                                        {% endif %}
-                                                        <tr>
-                                                            <th class="ps-0" scope="row">Phone:</th>
-                                                            <td class="text-muted">{{ user.phone }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th class="ps-0" scope="row">Verification:</th>
-                                                            <td>
-                                                                {% if user.mobile %}
-                                                                    <span class="badge bg-success">Verified</span>
-                                                                {% else %}
-                                                                    <span class="badge bg-danger">Not Verified</span>
-                                                                {% endif %}
-                                                            </td>
-                                                        </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div><!-- end card body -->
-                                        </div><!-- end card -->
-                                    </div>
-                                    <!--end col-->
-
-                                    <div class="col-xxl-8">
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <h5 class="card-title mb-3">Recent Activities</h5>
-                                                <ul class="list-group">
-                                                    {% for booking in service_bookings %}
-                                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                            <div>
-                                                                <strong>{{ booking.date }}</strong><br>
-                                                                Booking Type: {{ booking.get_booking_type_display }}<br>
-                                                                Status: {{ booking.get_status_display }}
-                                                            </div>
-                                                            <span class="badge bg-secondary">{{ booking.total }}</span>
-                                                        </li>
-                                                    {% empty %}
-                                                        <li class="list-group-item text-muted">No recent activities found.</li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </div><!-- end card body -->
-                                        </div><!-- end card -->
-                                    </div>
-                                    <!--end col-->
-                                </div>
-                                <!--end row-->
-
-                                <!-- Vehicle Details Section -->
-                                <div class="row mt-4">
-                                    <div class="col-12">
-                                        <h5 class="card-title mb-3">Vehicle Details</h5>
-                                        <div class="row">
-                                            {% for vehicle in vehicles %}
-                                                <div class="col-md-4">
-                                                    <div class="card mb-3">
-                                                        <div class="card-body">
-                                                            <p class="card-text">Brand: <strong>{{ vehicle.brand }}</strong></p>
-                                                            <h6 class="card-subtitle mb-2 text-muted">Model: {{ vehicle.model }}</h6>
-                                                            <p class="card-text">Reg Number: <strong>{{ vehicle.registration_number }}</strong></p>          
-                                                            <p class="card-text">Type: <strong>{{ vehicle.vehicle_type }}</strong></p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            {% empty %}
-                                                <div class="col-12">
-                                                    <div class="alert alert-warning" role="alert">
-                                                        No vehicles found for this user.
-                                                    </div>
-                                                </div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- End Vehicle Details Section -->
-                            </div>
+            <!-- Main Content Area -->
+            <div class="col-xl-9">
+                <!-- Recent Bookings -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Recent Bookings</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-centered align-middle table-nowrap mb-0">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Service</th>
+                                        <th scope="col">Shop</th>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Amount</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for booking in service_bookings %}
+                                    <tr>
+                                        <td>{{ booking.get_booking_type_display }}</td>
+                                        <td>{{ booking.provider.shop_name }}</td>
+                                        <td>{{ booking.date|date:"d M Y" }}</td>
+                                        <td>₹{{ booking.total }}</td>
+                                        <td>
+                                            {% if booking.status == 'confirmed' %}
+                                                <span class="badge bg-success">Completed</span>
+                                            {% elif booking.status == 'cancelled' %}
+                                                <span class="badge bg-danger">Cancelled</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">Pending</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center">No bookings found</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
-                        <!--end tab-content-->
                     </div>
                 </div>
-                <!--end col-->
-            </div>
-            <!--end row-->
 
-            {% include "dashboard/includes/modals/update.html" with title="Space" %}
-            {% include "dashboard/includes/modals/delete.html" with title1="a Space" title2="Space" %}
-        </div><!-- container-fluid -->
+                <!-- Favorite Salons -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Favorite Shops</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            {% for favorite in favorites %}
+                            <div class="col-md-6">
+                                <div class="card border">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ favorite.service_provider.shop_name }}</h5>
+                                        <p class="card-text">
+                                            <small class="text-muted">
+                                                {{ favorite.service_provider.category.name }} • 
+                                                {{ favorite.service_provider.shop_type|title }}
+                                            </small>
+                                        </p>
+                                        <p class="card-text">{{ favorite.service_provider.address }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="col-12 text-center">
+                                <p class="text-muted mb-0">No favorite salons added</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 {% endblock content %}
-
-{% block js %}
-    <script src="{% static 'dashboard/assets/libs/sweetalert2/sweetalert2.min.js' %}"></script>
-    <script src="{% static 'dashboard/assets/libs/apexcharts/apexcharts.min.js' %}"></script>
-    <script src="{% static 'dashboard/assets/js/pages/modal.init.js' %}"></script>
-{% endblock js %}
-
-{% block script %}
-    <script>
-        $(function () {
-            $(".btn-update").click(function () {
-                $('#updateModal').modal('toggle');
-                var id = $(this).data("id")
-                var update_url = '/update_space/' + id + '/' + 2 + '/'
-                $('#update-form').attr('action', update_url)
-                $.ajax({
-                    type: 'GET',
-                    url: update_url,
-                    beforeSend: function () {
-                        $('#update-form-box').addClass('hidden');
-                        $('#btn-modal-update').addClass('hidden');
-                        $('#update-loading').removeClass('hidden');
-                    },
-                    success: function (response) {
-                        $('#update-form-box').removeClass('hidden');
-                        $('#btn-modal-update').removeClass('hidden');
-                        $('#update-loading').addClass('hidden');
-                        $('#update-form-box').html(response)
-                    },
-                    error: function (error) {
-                        alert("Error fetching data");
-                    },
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                })
-            });
-        });
-
-        $('.deleteConfirmModalClass').click(function () {
-            $('#delete-record').data('value', $(this).data('value'))
-            $('#delete-record').click(function () {
-                $.ajax({
-                    url: '/delete_space/' + $(this).data('value') + '/',
-                    type: 'POST',
-                    data: {
-                        csrfmiddlewaretoken: '{{ csrf_token }}',
-                    },
-                    success: function (data) {
-                        window.location.reload();
-                    },
-                    error: function () {
-                        alert("Error deleting record");
-                    }
-                })
-            })
-        });
-    </script>
-{% endblock script %}
