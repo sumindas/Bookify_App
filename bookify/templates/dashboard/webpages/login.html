@@ -52,22 +52,32 @@
         {#    <div class="custom-bg-login">#}
         <div id="alert-box-top-right">
             {% if messages %}
-                {% for message in messages %}
-                    <div class="container-fluid p-0">
-                        {% if message.tags == 'alert-danger' %}
-                            <div class="alert alert-danger alert-border-left alert-dismissible fade show" role="alert">
-                                <i class="mdi mdi-exclamation-thick me-3 align-middle"></i> {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        {% endif %}
-                        {% if message.tags == 'alert-success' %}
-                            <div class="alert alert-success alert-border-left alert-dismissible fade show" role="alert">
-                                <i class="mdi mdi-check-all me-3 align-middle"></i> {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        {% endif %}
-                    </div>
-                {% endfor %}
+            {% for message in messages %}
+            {% if message.tags == 'success' %}
+                
+                <div data-toast data-toast-text="{{ message }}"
+                     data-toast-gravity="top" data-toast-position="right"
+                     data-toast-className="success rounded px-4 py-3"
+                     data-toast-duration="2500"
+                     class="noty-tost d-none rounded shadow bg-success"></div>
+            {% endif %}
+            {% if message.tags == 'error' %}
+                
+                <div data-toast data-toast-text="{{ message }}"
+                     data-toast-gravity="top" data-toast-position="right"
+                     data-toast-className="danger rounded px-4 py-3"
+                     data-toast-duration="10000"
+                     class="noty-tost d-none rounded shadow bg-danger"></div>
+            {% endif %}
+            {% if message.tags == 'warning' %}
+                
+                <div data-toast data-toast-text="{{ message }}"
+                     data-toast-gravity="top" data-toast-position="right"
+                     data-toast-className="warning rounded px-4 py-3"
+                     data-toast-duration="2500"
+                     class="noty-tost d-none rounded shadow bg-warning"></div>
+            {% endif %}
+        {% endfor %}
             {% endif %}
         </div>
         <div id="loadingToast" class="toast">Loading...</div>

@@ -10,6 +10,8 @@ from datetime import datetime, timedelta
 @login_required
 def booking_manager(request):
     """View for managing all bookings"""
+    bookings_queryset = Booking.objects.filter(is_deleted=False)
+    print(bookings_queryset)
     context = {
         'title': 'Manage Bookings'
     }
@@ -18,13 +20,8 @@ def booking_manager(request):
 @login_required
 def booking_list(request):
     """API endpoint for DataTables to fetch booking data"""
-    if request.user.user_type == 1:  # Admin
-        bookings_queryset = Booking.objects.all()
-    elif request.user.user_type == 2:  # Service Provider
-        provider = ServiceProvider.objects.get(user=request.user)
-        bookings_queryset = Booking.objects.filter(provider=provider)
-    else:  # Customer
-        bookings_queryset = Booking.objects.filter(customer=request.user)
+    
+    bookings_queryset = Booking.objects.filter(is_deleted=False)
 
     # Get DataTables parameters
     draw = request.GET.get('draw')
@@ -81,7 +78,7 @@ def booking_list(request):
                 </div>
             '''
         })
-
+    print(data)
     response = {
         'draw': int(draw),
         'recordsTotal': total_records,

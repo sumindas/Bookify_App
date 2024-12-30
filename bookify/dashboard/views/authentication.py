@@ -8,28 +8,32 @@ from datetime import datetime
 
 
 def login(request):
-    # if 'username' in request.session:
-    #     return redirect('dashboard-home')
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+
+        if not username or not password:
+            messages.error(request, 'Please provide both username and password')
+            return redirect('dashboard-login')
+
         user = auth.authenticate(request, username=username, password=password)
-        
+    
+
         if user is not None:
-            if user.user_type == 1:
-                request.session['username'] = username
-                auth.login(request, user)
-                messages.success(request, 'Admin Logged in!')
-                return redirect('dashboard-home')
+            if user.is_active:
+                if user.user_type == 1:
+                    auth.login(request, user)
+                    request.session['username'] = username
+                    messages.success(request, 'Admin Logged in!')
+                    return redirect('dashboard-home')
+                else:
+                    messages.error(request, "Access Denied! Only admin users can log in.")
             else:
-                messages.error(request, "Access Denied! Only admin users can log in.")
-                return redirect('dashboard-login')
+                messages.error(request, "Your account is inactive. Please contact the administrator.")
         else:
             messages.error(request, 'Invalid username or password!')
-            return redirect('dashboard-login')
+        return redirect('dashboard-login')
     return render(request, "dashboard/webpages/login.html")
-    
-    
 
 @login_required
 def home(request):

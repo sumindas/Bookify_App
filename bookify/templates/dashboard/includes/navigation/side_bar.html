@@ -50,7 +50,7 @@
                 
                 <li class="nav-item">
                     <a class="nav-link menu-link {% if request.path == "/manage_booking/" %}active{% endif %} "
-                       href="">
+                       href="{% url 'dashboard-booking-manager' %}">
                         <i class="mdi mdi-cash"></i> <span data-key="t-space">Manage Bookings</span>
                     </a>
                 </li>

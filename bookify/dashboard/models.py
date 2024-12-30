@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
-
+# Create your models here.
 def get_random_string():
     chars = string.ascii_lowercase
     strin = ''.join(random.choice(chars) for _ in range(6))
@@ -79,7 +79,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'username'
     objects = MyUserManager()
 
-    def _str_(self):
+    def __str__(self):
         if self.name:
             return self.name
         else:
@@ -157,6 +157,7 @@ class ShopSlot(models.Model):
     saturday_end = models.TimeField(blank=True, null=True)
     sunday_start = models.TimeField(blank=True, null=True)
     sunday_end = models.TimeField(blank=True, null=True)
+    is_deleted = models.BooleanField(default = False)
     
 
 class Service(models.Model):
@@ -165,6 +166,8 @@ class Service(models.Model):
     description = models.TextField(blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     duration = models.PositiveIntegerField(help_text="Duration in minutes")
+    is_available = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default = False)
 
 class TimeSlot(models.Model):
     provider = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE)
@@ -183,6 +186,8 @@ class Booking(models.Model):
     booking_type = models.CharField(max_length=50, choices=[('same-day', 'Same-Day'), ('premium', 'Premium')], blank=True, null=True)
     booking_fee = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     total_service_price = models.DecimalField(max_digits=10, decimal_places=2)
+    is_deleted = models.BooleanField(default = False)
+
 
 class Offer(models.Model):
     provider = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE)
@@ -197,15 +202,21 @@ class Review(models.Model):
     rating = models.PositiveIntegerField()
     review_text = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now)
+    is_deleted = models.BooleanField(default = False)
+
 
 class UserFavorites(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     service_provider = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE)
+    is_deleted = models.BooleanField(default = False)
+
 
 class PaymentMethod(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default = False)
+    
 
 class Payment(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -216,9 +227,12 @@ class Payment(models.Model):
     status = models.CharField(max_length=50, choices=[('pending', 'Pending'), ('completed', 'Completed'), ('failed', 'Failed')])
     transaction_date = models.DateTimeField(auto_now_add=True)
     transaction_reference = models.CharField(max_length=255, unique=True)
+    is_deleted = models.BooleanField(default = False)
+
 
 class Refund(models.Model):
     payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
     refund_amount = models.DecimalField(max_digits=10, decimal_places=2)
     reason = models.TextField()
     refunded_at = models.DateTimeField(default=timezone.now)
+    is_deleted = models.BooleanField(default = False)

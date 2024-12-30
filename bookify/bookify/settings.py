@@ -186,6 +186,10 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 AUTH_USER_MODEL = "dashboard.CustomUser"
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 if env("GDAL") == "TRUE":
     GDAL_LIBRARY_PATH = env("GDAL_LIBRARY_PATH")
     GEOS_LIBRARY_PATH = env("GEOS_LIBRARY_PATH")

@@ -31,7 +31,7 @@ urlpatterns = [
     path('service-categories/edit/<int:pk>/', service_category.service_category_edit, name='dashboard-service-categories-edit'),
     path('service-categories/delete/<int:pk>/', service_category.service_category_delete, name='dashboard-service-categories-delete'),
     path('bookings/', booking.booking_manager, name='dashboard-booking-manager'),
-    path('bookings/list', booking.booking_list, name='dashboard-booking-list'),
-    path('bookings/<int:pk>/view', booking.booking_view, name='dashboard-booking-view'),
-    path('bookings/<int:pk>/update-status', booking.update_booking_status, name='dashboard-booking-update-status'),
+    path('bookings/list/', booking.booking_list, name='dashboard-booking-list'),
+    path('bookings/<int:pk>/view/', booking.booking_view, name='dashboard-booking-view'),
+    path('bookings/<int:pk>/update-status/', booking.update_booking_status, name='dashboard-booking-update-status'),
 ]

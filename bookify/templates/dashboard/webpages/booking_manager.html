@@ -176,11 +176,29 @@
     <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
 
     <script>
+    $(document).ready(function() {
+        $('#bookings-table').DataTable();
+    });
         $(document).ready(function() {
             var table = $('#bookings-table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: '{% url "dashboard-booking-list" %}',
+                ajax: {
+                    url: '{% url "dashboard-booking-list" %}',
+                    method: 'POST',
+                    data: function(d) {
+                        d.search_value = $('#search-input').val();
+                    },
+                    dataSrc: function(json) {
+                        console.log(json);
+                        return json.data;
+                    }
+                },
+                responsive: true,
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ],
                 columns: [
                     {data: 'id'},
                     {data: 'customer'},
@@ -252,7 +270,7 @@
         });
 
         function viewBooking(id) {
-            window.location.href = `/dashboard/bookings/${id}/view`;
+            window.location.href = `/dashboard/bookings/${id}/view/`;
         }
 
         function updateStatus(id, status) {

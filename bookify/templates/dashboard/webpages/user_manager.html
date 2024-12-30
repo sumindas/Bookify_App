@@ -183,6 +183,16 @@
                   };
               }
           },
+          dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ],
+          "responsive": true,
+          "order": [[0, "asc"]],
+          "drawCallback": function (settings) {
+              $('.dataTables_paginate > .pagination').addClass('pagination-rounded');
+          },
+
           "columns": [
               {"data": "id"},
               {"data": "name"},
