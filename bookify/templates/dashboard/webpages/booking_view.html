@@ -1,6 +1,6 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
-{% load humanize %}
+
 
 {% block css %}
     <link href="{% static 'dashboard/assets/libs/sweetalert2/sweetalert2.min.css' %}" rel="stylesheet" type="text/css"/>
@@ -80,7 +80,7 @@
                                                 <p class="booking-info-label mb-0">Customer</p>
                                             </div>
                                             <div class="col-sm-8">
-                                                <p class="booking-info-value mb-0">{{ booking.customer.email }}</p>
+                                                <p class="booking-info-value mb-0">{{ booking.customer.name }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -90,7 +90,9 @@
                                                 <p class="booking-info-label mb-0">Service Provider</p>
                                             </div>
                                             <div class="col-sm-8">
-                                                <p class="booking-info-value mb-0">{{ booking.provider.shop_name }}</p>
+                                                <p class="booking-info-value mb-0">
+                                                    <a href="{% url 'dashboard-shop-view' pk=booking.provider.id %}">{{ booking.provider.shop_name }}</a>
+                                                </p>
                                             </div>
                                         </div>
                                     </div>

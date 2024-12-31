@@ -17,7 +17,7 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
-from dashboard.views import authentication, users, service_category, booking
+from dashboard.views import authentication, users, service_category, booking,shop
 
 urlpatterns = [
     path("", authentication.login, name = 'dashboard-login'),
@@ -34,4 +34,12 @@ urlpatterns = [
     path('bookings/list/', booking.booking_list, name='dashboard-booking-list'),
     path('bookings/<int:pk>/view/', booking.booking_view, name='dashboard-booking-view'),
     path('bookings/<int:pk>/update-status/', booking.update_booking_status, name='dashboard-booking-update-status'),
+    path('shops/', shop.manage_shops, name='dashboard-shop-manager'),
+    path('shops/list/', shop.shop_list, name='dashboard-shop-list'),
+    path('shops/view/<int:pk>/', shop.shop_details, name='dashboard-shop-view'),
+    path('shops/edit/<int:pk>/', shop.edit_shop, name='dashboard-shop-edit'),
+    path('update_provider/<int:pk>/', shop.update_provider, name='update_provider'),
+    path('delete_provider/<int:pk>/', shop.delete_provider, name='delete_provider'),
+    path('toggle_provider_verification/<int:pk>/', shop.toggle_provider_verification, name='toggle_provider_verification'),
+   
 ]

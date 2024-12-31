@@ -55,8 +55,8 @@
 
                         <div class="page-title-right">
                             <ol class="breadcrumb m-0">
-                                <li class="breadcrumb-item">Dashboard</li>
-                                <li class="breadcrumb-item">Users</li>
+                                <li class="breadcrumb-item"><a href="javascript: void(0);" class="text-primary">Dashboard</a></li>
+                                <li class="breadcrumb-item"><a href="javascript: void(0);" class="text-primary">Users</a></li>
                                 <li class="breadcrumb-item active">Manage</li>
                             </ol>
                         </div>
@@ -74,7 +74,6 @@
                             <div class="col-12">
                                 <div class="d-flex align-items-lg-center flex-lg-row flex-column">
                                     <div class="flex-grow-1">
-                                        {#                                        <h4 class="fs-16 mb-1">Good Morning, {{ request.user }}!</h4>#}
                                     </div>
                                     <div class="mt-3 mt-lg-0"></div>
                                 </div><!-- end card header -->
@@ -165,45 +164,41 @@
     <script src="{% static 'dashboard/assets/libs/sweetalert2/sweetalert2.min.js' %}"></script>
     <script src="{% static 'dashboard/assets/libs/apexcharts/apexcharts.min.js' %}"></script>
     <script src="{% static 'dashboard/assets/js/pages/modal.init.js' %}"></script>
+    
 
   {% endblock js %}
 
   {% block script %}
   <script>
-      var dataTable = $('#DatatableID').DataTable({
-          "processing": true,
-          "serverSide": true,
-          "ajax": {
-              "url": "{% url 'dashboard-users-list' %}",
-              "type": "GET",
-              "data": function (d) {
-                  d.search = {
-                      "value": $('input[type="search"]').val(),
-                      "regex": false
-                  };
-              }
-          },
-          dom: 'Bfrtip',
-                buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
-                ],
-          "responsive": true,
-          "order": [[0, "asc"]],
-          "drawCallback": function (settings) {
-              $('.dataTables_paginate > .pagination').addClass('pagination-rounded');
-          },
-
-          "columns": [
-              {"data": "id"},
-              {"data": "name"},
-              {"data": "phone"},
-              {"data": "created"},
-              {
-                  "data": "id",  
-                  "orderable": false,
-                  "searchable": false,
-                  "render": function (data, type, row) {
-                      return `
+    var dataTable = $('#DatatableID').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "{% url 'dashboard-users-list' %}",
+            "type": "GET",
+            "data": function(d) {
+                d.search = {
+                    "value": $('input[type="search"]').val(),
+                    "regex": false
+                };
+            }
+        },
+        "responsive": true,
+        "order": [[0, "asc"]],
+        "drawCallback": function(settings) {
+            $('.dataTables_paginate > .pagination').addClass('pagination-rounded');
+        },
+        "columns": [
+            { "data": "id" },
+            { "data": "name" },
+            { "data": "phone" },
+            { "data": "created" },
+            {
+                "data": "id",
+                "orderable": false,
+                "searchable": false,
+                "render": function(data, type, row) {
+                    return `
                         <div class="dropdown d-inline-block">
                             <button class="btn btn-soft-secondary btn-sm dropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="ri-more-fill align-middle"></i>
@@ -216,37 +211,39 @@
                                 </li>
                             </ul>
                         </div>`;
-                  }
-              }
-          ],
-          "lengthMenu": [
-              [3,25, 50, 100],
-              [3,25, 50, 100]
-          ],
-          "pageLength": 25,
-          "responsive": true,
-          "scrollX": true,
-          "scrollY": "50vh",
-          "scrollCollapse": true,
-          "ordering": true,
-          "language": {
-              "searchPlaceholder": "Search Users",
-              "lengthMenu": "Show _MENU_",
-              "zeroRecords": `<span class="text-danger">No data found</span>`,
-              "info": "Showing page _PAGE_ of _PAGES_ (Total records: _TOTAL_)",
-              "infoEmpty": "No records available",
-              "infoFiltered": "(filtered from _MAX_ total records)",
-              "paginate": {
-                  "first": `<i class="mdi mdi-arrow-left"></i>`,
-                  "previous": `<i class="mdi mdi-arrow-left"></i>`,
-                  "last": `<i class="mdi mdi-arrow-right"></i>`,
-                  "next": `<i class="mdi mdi-arrow-right"></i>`
-              }
-          },
-          "columnDefs": [{
-              "className": "text-center align-middle",
-              "targets": "_all"
-          }],
-      });
+                }
+            }
+        ],
+        "lengthMenu": [
+            [3, 25, 50, 100],
+            [3, 25, 50, 100]
+        ],
+        "pageLength": 25,
+        "scrollX": true,
+        "scrollY": "50vh",
+        "scrollCollapse": true,
+        "ordering": true,
+        "language": {
+            "searchPlaceholder": "Search Users",
+            "lengthMenu": "Show _MENU_",
+            "zeroRecords": `<span class="text-danger">No data found</span>`,
+            "info": "Showing page _PAGE_ of _PAGES_ (Total records: _TOTAL_)",
+            "infoEmpty": "No records available",
+            "infoFiltered": "(filtered from _MAX_ total records)",
+            "paginate": {
+                "first": `<i class="mdi mdi-arrow-left"></i>`,
+                "previous": `<i class="mdi mdi-arrow-left"></i>`,
+                "last": `<i class="mdi mdi-arrow-right"></i>`,
+                "next": `<i class="mdi mdi-arrow-right"></i>`
+            }
+        },
+        "columnDefs": [
+            {
+                "className": "text-center align-middle",
+                "targets": "_all"
+            }
+        ]
+    });
+
   </script>
   {% endblock script %}

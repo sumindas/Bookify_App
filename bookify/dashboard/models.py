@@ -134,6 +134,8 @@ class ServiceProvider(models.Model):
     )
     onboarding_progress = models.IntegerField(default=0)  
     is_onboarding_complete = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default = False)
+    created_at = models.DateTimeField(default=timezone.now)
     
     def __str__(self):
         return self.category.name or self.user.username

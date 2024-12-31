@@ -17,21 +17,20 @@ def login(request):
             return redirect('dashboard-login')
 
         user = auth.authenticate(request, username=username, password=password)
-    
 
-        if user is not None:
-            if user.is_active:
-                if user.user_type == 1:
-                    auth.login(request, user)
-                    request.session['username'] = username
-                    messages.success(request, 'Admin Logged in!')
-                    return redirect('dashboard-home')
-                else:
-                    messages.error(request, "Access Denied! Only admin users can log in.")
-            else:
-                messages.error(request, "Your account is inactive. Please contact the administrator.")
-        else:
+
+        if user is None:
             messages.error(request, 'Invalid username or password!')
+        elif user.is_active:
+            if user.user_type == 1:
+                auth.login(request, user)
+                request.session['username'] = username
+                messages.success(request, 'Admin Logged in!')
+                return redirect('dashboard-home')
+            else:
+                messages.error(request, "Access Denied! Only admin users can log in.")
+        else:
+            messages.error(request, "Your account is inactive. Please contact the administrator.")
         return redirect('dashboard-login')
     return render(request, "dashboard/webpages/login.html")
 

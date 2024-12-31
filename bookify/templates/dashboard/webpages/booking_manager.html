@@ -16,8 +16,9 @@
                     <h4 class="mb-sm-0">Manage Bookings</h4>
                     <div class="page-title-right">
                         <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
-                            <li class="breadcrumb-item active">Manage Bookings</li>
+                            <li class="breadcrumb-item"><a href="javascript: void(0);" class="text-primary">Dashboard</a></li>
+                            <li class="breadcrumb-item active"><a href="javascript: void(0);" class="text-primary">Bookings</a></li>
+                            <li class="breadcrumb-item active">Manage</li>
                         </ol>
                     </div>
                 </div>
@@ -171,135 +172,162 @@
 {% endblock content %}
 
 {% block js %}
-    <script src="{% static 'dashboard/assets/libs/sweetalert2/sweetalert2.min.js' %}"></script>
-    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
+<script src="{% static 'dashboard/assets/libs/sweetalert2/sweetalert2.min.js' %}"></script>
+<script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <script>
+<script>
     $(document).ready(function() {
-        $('#bookings-table').DataTable();
-    });
-        $(document).ready(function() {
-            var table = $('#bookings-table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: '{% url "dashboard-booking-list" %}',
-                    method: 'POST',
-                    data: function(d) {
-                        d.search_value = $('#search-input').val();
-                    },
-                    dataSrc: function(json) {
-                        console.log(json);
-                        return json.data;
+        var table = $('#bookings-table').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: '{% url "dashboard-booking-list" %}',
+                method: 'GET',
+                data: function(d) {
+                    d.search_value = $('#search-input').val();
+                    console.log(d);  // Log the request data
+                },
+                dataSrc: function(json) {
+                    console.log(json);  // Log the response data
+                    if (json.error) {
+                        Swal.fire('Error', json.error, 'error');
+                        return [];
+                    }
+                    return json.data;
+                },
+                error: function(xhr) {
+                    Swal.fire('Error', xhr.responseJSON?.error || 'Something went wrong', 'error');
+                }
+            },
+            responsive: true,
+            columns: [
+                {data: 'id'},
+                {data: 'customer'},
+                {data: 'provider'},
+                {data: 'service'},
+                {data: 'scheduled_time'},
+                {
+                    data: 'status',
+                    render: function(data, type, row) {
+                        let badgeClass = {
+                            'pending': 'badge bg-warning',
+                            'confirmed': 'badge bg-success',
+                            'cancelled': 'badge bg-danger'
+                        }[data] || 'badge bg-secondary';
+                        
+                        return `<span class="${badgeClass}">${data}</span>`;
                     }
                 },
-                responsive: true,
-                dom: 'Bfrtip',
-                buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
-                ],
-                columns: [
-                    {data: 'id'},
-                    {data: 'customer'},
-                    {data: 'provider'},
-                    {data: 'service'},
-                    {data: 'scheduled_time'},
-                    {
-                        data: 'status',
-                        render: function(data, type, row) {
-                            let badgeClass = {
-                                'pending': 'badge bg-warning',
-                                'confirmed': 'badge bg-success',
-                                'cancelled': 'badge bg-danger'
-                            }[data] || 'badge bg-secondary';
-                            
-                            return `<span class="${badgeClass}">${data}</span>`;
-                        }
-                    },
-                    {
-                        data: 'payment_status',
-                        render: function(data, type, row) {
-                            let badgeClass = {
-                                'completed': 'badge bg-success',
-                                'pending': 'badge bg-warning',
-                                'failed': 'badge bg-danger'
-                            }[data] || 'badge bg-secondary';
-                            
-                            return `<span class="${badgeClass}">${data}</span>`;
-                        }
-                    },
-                    {
-                        data: 'total_price',
-                        render: function(data, type, row) {
-                            return '₹' + data.toFixed(2);
-                        }
-                    },
-                    {data: 'actions', orderable: false}
-                ],
-                order: [[0, 'desc']],
-                drawCallback: function(settings) {
-                    let api = this.api();
-                    let data = api.rows().data();
-                    
-                    // Reset counters
-                    let pending = 0;
-                    let confirmed = 0;
-                    let cancelled = 0;
-                    let revenue = 0;
-                    
-                    // Count statuses and calculate revenue
-                    data.each(function(row) {
-                        if(row.status === 'pending') pending++;
-                        else if(row.status === 'confirmed') {
-                            confirmed++;
-                            if(row.payment_status === 'completed') {
-                                revenue += row.total_price;
-                            }
-                        }
-                        else if(row.status === 'cancelled') cancelled++;
-                    });
-                    
-                    // Update counters
-                    $('#pending-count').text(pending);
-                    $('#confirmed-count').text(confirmed);
-                    $('#cancelled-count').text(cancelled);
-                    $('#total-revenue').text(revenue.toFixed(2));
+                {
+                    data: 'payment_status',
+                    render: function(data, type, row) {
+                        let badgeClass = {
+                            'completed': 'badge bg-success',
+                            'pending': 'badge bg-warning',
+                            'failed': 'badge bg-danger'
+                        }[data] || 'badge bg-secondary';
+                        
+                        return `<span class="${badgeClass}">${data}</span>`;
+                    }
+                },
+                {
+                    data: 'total_price',
+                    render: function(data, type, row) {
+                        return '₹' + data.toFixed(2);
+                    }
+                },
+                {data: 'actions', orderable: false}
+            ],
+            "lengthMenu": [
+                [1,10, 25, 50, 100],
+                [1,10, 25, 50, 100]
+            ],
+            "pageLength": 10,   
+            "scrollX": true,
+            "scrollY": "50vh",
+            "scrollCollapse": true,
+            "language": {
+                "searchPlaceholder": "Search Bookings",
+                "lengthMenu": "Show _MENU_",
+                "zeroRecords": `<span class="text-danger">No data found</span>`,
+                "info": "Showing page _PAGE_ of _PAGES_ (Total records: _TOTAL_)",
+                "infoEmpty": "No records available",
+                "infoFiltered": "(filtered from _MAX_ total records)",
+                "paginate": {
+                    "first": `<i class="mdi mdi-arrow-left"></i>`,
+                    "previous": `<i class="mdi mdi-arrow-left"></i>`,
+                    "last": `<i class="mdi mdi-arrow-right"></i>`,
+                    "next": `<i class="mdi mdi-arrow-right"></i>`
                 }
-            });
+            },
+            "drawCallback": function(settings) {  
+                $('.dataTables_paginate > .pagination').addClass('pagination-rounded');
+            },  
+            order: [[0, 'desc']],
+            drawCallback: function(settings) {
+                let api = this.api();
+                let data = api.rows().data();
+                
+                // Reset counters
+                let pending = 0;
+                let confirmed = 0;
+                let cancelled = 0;
+                let revenue = 0;
+                
+                // Count statuses and calculate revenue
+                data.each(function(row) {
+                    if(row.status === 'pending') pending++;
+                    else if(row.status === 'confirmed') {
+                        confirmed++;
+                        if(row.payment_status === 'completed') {
+                            revenue += row.total_price;
+                        }
+                    }
+                    else if(row.status === 'cancelled') cancelled++;
+                });
+                
+                // Update counters
+                $('#pending-count').text(pending);
+                $('#confirmed-count').text(confirmed);
+                $('#cancelled-count').text(cancelled);
+                $('#total-revenue').text(revenue.toFixed(2));
+            }
         });
+    });
 
-        function viewBooking(id) {
-            window.location.href = `/dashboard/bookings/${id}/view/`;
-        }
+    function viewBooking(id) {
+        window.location.href = `/bookings/${id}/view/`;
+    }
 
-        function updateStatus(id, status) {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: `Do you want to ${status} this booking?`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes',
-                cancelButtonText: 'No'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: `/dashboard/bookings/${id}/update-status`,
-                        type: 'POST',
-                        data: {
-                            status: status,
-                            csrfmiddlewaretoken: '{{ csrf_token }}'
-                        },
-                        success: function(response) {
-                            Swal.fire('Success', 'Booking status updated successfully', 'success');
-                            $('#bookings-table').DataTable().ajax.reload();
-                        },
-                        error: function(xhr) {
-                            Swal.fire('Error', xhr.responseJSON?.error || 'Something went wrong', 'error');
-                        }
-                    });
-                }
-            });
-        }
-    </script>
+    function updateStatus(id, status) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: `Do you want to ${status} this booking?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `/dashboard/bookings/${id}/update-status`,
+                    type: 'POST',
+                    data: {
+                        status: status,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        Swal.fire('Success', 'Booking status updated successfully', 'success');
+                        $('#bookings-table').DataTable().ajax.reload();
+                    },
+                    error: function(xhr) {
+                        Swal.fire('Error', xhr.responseJSON?.error || 'Something went wrong', 'error');
+                    }
+                });
+            }
+        });
+    }
+</script>
 {% endblock js %}

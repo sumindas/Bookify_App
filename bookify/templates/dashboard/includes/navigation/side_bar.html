@@ -36,7 +36,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link menu-link {% if request.path == "/dashboard/users/" %}active{% endif %} "
+                    <a class="nav-link menu-link {% if request.path == "/users/" %}active{% endif %} "
                        href="{% url 'dashboard-user-manager' %}">
                         <i class="mdi mdi-account"></i> <span data-key="t-space">Manage Users</span>
                     </a>
@@ -56,7 +56,7 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link menu-link {% if request.path == "/manage_space/" %}active{% endif %} "
-                       href="">
+                       href="{% url 'dashboard-shop-manager' %}">
                         <i class="mdi mdi-store"></i> <span data-key="t-space">Manage Shops</span>
                     </a>
                 </li>

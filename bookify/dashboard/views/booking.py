@@ -10,8 +10,7 @@ from datetime import datetime, timedelta
 @login_required
 def booking_manager(request):
     """View for managing all bookings"""
-    bookings_queryset = Booking.objects.filter(is_deleted=False)
-    print(bookings_queryset)
+    # bookings_queryset = Booking.objects.filter(is_deleted=False)
     context = {
         'title': 'Manage Bookings'
     }
@@ -58,7 +57,7 @@ def booking_list(request):
         
         data.append({
             'id': booking.id,
-            'customer': booking.customer.email,
+            'customer': booking.customer.name,
             'provider': booking.provider.shop_name,
             'service': booking.service.name,
             'scheduled_time': booking.scheduled_time.strftime('%Y-%m-%d %H:%M'),
@@ -78,9 +77,8 @@ def booking_list(request):
                 </div>
             '''
         })
-    print(data)
     response = {
-        'draw': int(draw),
+        'draw': int(draw) if draw is not None else 0,
         'recordsTotal': total_records,
         'recordsFiltered': total_records,
         'data': data,

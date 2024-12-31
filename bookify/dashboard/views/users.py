@@ -40,7 +40,7 @@ def users_list(request):
         # Search
         if search_value:
             users_queryset = users_queryset.filter(
-                Q(email__icontains=search_value) |
+                Q(name__icontains=search_value) |
                 Q(phone__icontains=search_value)
             )
 

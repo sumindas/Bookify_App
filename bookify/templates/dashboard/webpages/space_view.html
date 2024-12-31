@@ -1,17 +1,11 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
 {% load crispy_forms_tags %}
-{% load humanize %}
-
 
 {% block css %}
-
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
-    <!-- Sweet Alert css-->
     <link href="{% static 'dashboard/assets/libs/sweetalert2/sweetalert2.min.css' %}" rel="stylesheet" type="text/css"/>
-    <!--Swiper slider css-->
     <link href="{% static 'dashboard/assets/libs/swiper/swiper-bundle.min.css' %}" rel="stylesheet" type="text/css"/>
-
 {% endblock css %}
 
 {% block style %}
@@ -22,23 +16,20 @@
     </style>
 {% endblock style %}
 
-
 {% block content %}
-
     <div class="page-content">
         <div class="container-fluid">
             <div class="profile-foreground position-relative mx-n4 mt-n4">
                 <div class="profile-wid-bg">
-                    <img src="{% static 'images/parking.png' %}" alt="" class="profile-wid-img"/>
+                    <img src="{% static 'images/business-banner.png' %}" alt="" class="profile-wid-img"/>
                 </div>
             </div>
             <div class="pt-4 mb-4 mb-lg-3 pb-lg-4">
-                <div class="row g-4"
-                     style="align-content: center; align-items: center;">
+                <div class="row g-4" style="align-content: center; align-items: center;">
                     <div class="col-auto">
                         <div class="avatar-lg">
-                            {% if space.image %}
-                                <img src="{{ space.image.url }}" alt="user-img"
+                            {% if provider.user.image %}
+                                <img src="{{ provider.user.image.url }}" alt="user-img"
                                      style="height: auto; width: 100%; object-fit: cover; border-radius: 100%;
                                      aspect-ratio: 1; border: .25rem solid #ffffff; background: #ffffff">
                             {% else %}
@@ -48,42 +39,18 @@
                             {% endif %}
                         </div>
                     </div>
-                    <!--end col-->
                     <div class="col">
                         <div class="p-2">
-                            <h3 class="text-white mb-1">{{ space.name }}</h3>
+                            <h3 class="text-white mb-1">{{ provider.shop_name }}</h3>
                             <div class="hstack text-white-50 gap-1">
                                 <div class="me-2">
                                     <i class="mdi mdi-map-marker me-1 text-white-75 fs-16 align-middle"></i>
-                                    {{ space.location }}
-                                </div>
-                                <div>
-
+                                    {{ provider.address }}
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!--end col-->
-{#                    <div class="col-12 col-lg-auto order-last order-lg-0">#}
-{#                        <div class="row text text-white-50 text-center">#}
-{#                            <div class="col-lg-6 col-4">#}
-{#                                <div class="p-2">#}
-                                    {#                                    <h4 class="text-white mb-1">24.3K</h4>#}
-                                    {#                                    <p class="fs-15 mb-0">Followers</p>#}
-{#                                </div>#}
-{#                            </div>#}
-{#                            <div class="col-lg-6 col-4">#}
-{#                                <div class="p-2">#}
-                                    {#                                    <h4 class="text-white mb-1">1.3K</h4>#}
-                                    {#                                    <p class="fs-15 mb-0">Following</p>#}
-{#                                </div>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-                    <!--end col-->
-
                 </div>
-                <!--end row-->
             </div>
 
             <div class="row">
@@ -93,10 +60,10 @@
                             <div class="flex-shrink-0">
                                 <a href="" class="btn d-inline-block btn-success btn-update custom-btn"
                                    data-bs-toggle="modal" data-bs-target="#updateModal"
-                                   data-id="{{ space.id }}">
+                                   data-id="{{ provider.id }}">
                                     <i class="mdi mdi-pencil fs-16"></i>
-                                    Edit Space</a>
-                                <a href="" data-value="{{ space.id }}"
+                                    Edit Provider</a>
+                                <a href="" data-value="{{ provider.id }}"
                                    data-bs-toggle="modal"
                                    data-bs-target="#deleteConfirmModal"
                                    class="btn btn-danger d-inline-block deleteConfirmModalClass">
@@ -104,114 +71,75 @@
                                 </a>
                             </div>
                         </div>
-                        <!-- Tab panes -->
+                        
                         <div class="tab-content pt-4 text-muted">
                             <div class="tab-pane active" id="overview-tab" role="tabpanel">
                                 <div class="row">
                                     <div class="col-xxl-4">
                                         <div class="card">
                                             <div class="card-body">
-                                                <h5 class="card-title mb-3">Info</h5>
+                                                <h5 class="card-title mb-3">Business Info</h5>
                                                 <div class="table-responsive">
                                                     <table class="table table-borderless mb-0">
                                                         <tbody>
                                                         <tr>
-                                                            <th class="ps-0" scope="row">Full Name:</th>
-                                                            <td class="text-muted">{{ space.name }}</td>
+                                                            <th class="ps-0" scope="row">Shop Name:</th>
+                                                            <td class="text-muted">{{ provider.shop_name }}</td>
                                                         </tr>
                                                         <tr>
-                                                            <th class="ps-0" scope="row">Location:</th>
-                                                            <td class="text-muted">{{ space.location }}</td>
+                                                            <th class="ps-0" scope="row">Category:</th>
+                                                            <td class="text-muted">{{ provider.category.name }}</td>
                                                         </tr>
                                                         <tr>
-                                                            <th class="ps-0" scope="row">About:</th>
-                                                            <td class="text-muted">{{ space.about }}</td>
+                                                            <th class="ps-0" scope="row">Shop Type:</th>
+                                                            <td class="text-muted">{{ provider.shop_type }}</td>
                                                         </tr>
                                                         </tbody>
                                                     </table>
                                                 </div>
-                                            </div><!-- end card body -->
-                                        </div><!-- end card -->
+                                            </div>
+                                        </div>
                                     </div>
-                                    <!--end col-->
+                                    
                                     <div class="col-xxl-8">
                                         <div class="card">
                                             <div class="card-body">
-                                                {#                                                <h5 class="card-title mb-3">About</h5>#}
                                                 <div class="table-responsive">
                                                     <table class="table w-100">
                                                         <tr>
-                                                            <th class="bg-light">Space Type</th>
+                                                            <th class="bg-light">Business Hours</th>
                                                             <td>
-                                                                {% for s in space.space_type %}
-                                                                    {% if s == "EV Charging" %}
-                                                                        <span class="text-success">{{ s }}</span>
-                                                                    {% else %}
-                                                                        {{ s }}
-                                                                    {% endif %}
-                                                                    {% if space.space_type|length > 1 %}
-                                                                        <br>
-                                                                    {% endif %}
-                                                                {% endfor %}
+                                                                {{ provider.opening_time }} - {{ provider.closing_time }}
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <th class="bg-light">Vehicle Type</th>
-                                                            <td>{{ space.vehicle_types }}</td>
+                                                            <th class="bg-light">Team Size</th>
+                                                            <td>{{ provider.team_size }} members</td>
                                                         </tr>
                                                         <tr>
-
-                                                            <th class="bg-light">Number of Slots</th>
-                                                            <td>
-                                                                {% if "Parking" in space.space_type %}
-                                                                    Parking Slots: {{ space.parking_slots }}
-                                                                {% endif %}
-                                                                {% if space.space_type|length > 1 %}
-                                                                    <br>
-                                                                {% endif %}
-                                                                {% if "EV Charging" in space.space_type %}
-                                                                    <span class="text-success">EV Slots: {{ space.charging_slots }}</span>
-                                                                {% endif %}
-                                                            </td>
+                                                            <th class="bg-light">Booking Preferences</th>
+                                                            <td>{{ provider.booking_preferences }}</td>
                                                         </tr>
                                                         <tr>
-                                                            <th class="bg-light">Open Status</th>
+                                                            <th class="bg-light">Verification Status</th>
                                                             <td>
-                                                                {% if space.open_status == "Closed" %}
-                                                                    <span class="text-danger">{{ space.open_status }}</span>
+                                                                {% if provider.is_verified %}
+                                                                    <span class="text-success">Verified</span>
                                                                 {% else %}
-                                                                    <span class="text-success">{{ space.open_status }}</span>
-                                                                {% endif %}
-                                                                {% if space.open_status == "Open" %}
-                                                                    <br>
-                                                                    From: {{ space.opening_time }}
-                                                                    <br>
-                                                                    To: {{ space.closing_time }}
+                                                                    <span class="text-warning">Pending Verification</span>
                                                                 {% endif %}
                                                             </td>
                                                         </tr>
-                                                        {% if "EV Charging" in space.space_type %}
-                                                            <tr>
-                                                                <th class="bg-light">Charging Types</th>
-                                                                <td>
-                                                                    {{ space.charging_types }}
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th class="bg-light">Charging Watt</th>
-                                                                <td>
-                                                                    {{ space.charging_watt }}
-                                                                </td>
-                                                            </tr>
-                                                        {% endif %}
-                                                        {% if "Parking" in space.space_type %}
-                                                            <tr>
-                                                                <th class="bg-light">Parking Fare</th>
-                                                                <td>
-                                                                    ₹{{ space.parking_fare }}/hr
-                                                                </td>
-                                                            </tr>
-                                                        {% endif %}
+                                                        <tr>
+                                                            <th class="bg-light">Onboarding Status</th>
+                                                            <td>
+                                                                {% if provider.is_onboarding_complete %}
+                                                                    <span class="text-success">Complete</span>
+                                                                {% else %}
+                                                                    <span class="text-warning">In Progress ({{ provider.onboarding_progress }}%)</span>
+                                                                {% endif %}
+                                                            </td>
+                                                        </tr>
                                                     </table>
                                                 </div>
                                                 <div class="row">
@@ -224,73 +152,41 @@
                                                             </div>
                                                             <div class="flex-grow-1 overflow-hidden">
                                                                 <p class="mb-1">Location</p>
-                                                                <h6 class="text-truncate mb-0">
-                                                                    <a href="{{ space.map_url }}" class="fw-semibold
-                                                                    fs-15" target="_blank">
-                                                                        Find on Maps</a></h6>
+                                                                <h6 class="text-truncate mb-0">{{ provider.address }}</h6>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <!--end col-->
-                                                    {#                                                    <div class="col-6 col-md-4">#}
-                                                    {#                                                        <div class="d-flex mt-4">#}
-                                                    {#                                                            <div class="flex-shrink-0 avatar-xs align-self-center me-3">#}
-                                                    {#                                                                <div class="avatar-title bg-light rounded-circle fs-16 text-primary">#}
-                                                    {#                                                                    <i class="mdi mdi-web"></i>#}
-                                                    {#                                                                </div>#}
-                                                    {#                                                            </div>#}
-                                                    {#                                                            <div class="flex-grow-1 overflow-hidden">#}
-                                                    {#                                                                <p class="mb-1">Website</p>#}
-                                                    {#                                                                <a href="{{ space.webs }}" class="fw-semibold fs-15"#}
-                                                    {#                                                                >{{ space.map_url }}</a>#}
-                                                    {#                                                            </div>#}
-                                                    {#                                                        </div>#}
-                                                    {#                                                    </div>#}
-                                                    <!--end col-->
                                                 </div>
-                                                <!--end row-->
                                             </div>
-                                            <!--end card-body-->
-                                        </div><!-- end card -->
+                                        </div>
                                     </div>
-                                    <!--end col-->
                                 </div>
-                                <!--end row-->
                             </div>
                         </div>
-                        <!--end tab-content-->
                     </div>
                 </div>
-                <!--end col-->
             </div>
-            <!--end row-->
 
-            {% include "dashboard/includes/modals/update.html" with title="Space" %}
-            {% include "dashboard/includes/modals/delete.html" with title1="a Space" title2="Space" %}
+            {% include "dashboard/includes/modals/update.html" with title="Service Provider" %}
+            {% include "dashboard/includes/modals/delete.html" with title1="a Service Provider" title2="Service Provider" %}
 
-        </div><!-- container-fluid -->
+        </div>
     </div>
-
-
 {% endblock content %}
 
 {% block js %}
-
     <script src="{% static 'dashboard/assets/libs/sweetalert2/sweetalert2.min.js' %}"></script>
     <script src="{% static 'dashboard/assets/libs/apexcharts/apexcharts.min.js' %}"></script>
     <script src="{% static 'dashboard/assets/js/pages/modal.init.js' %}"></script>
-
 {% endblock js %}
 
 {% block script %}
-
-
     <script>
         $(function () {
             $(".btn-update").click(function () {
                 $('#updateModal').modal('toggle');
                 var id = $(this).data("id")
-                var update_url = '/update_space/' + id + '/' + 2 + '/'
+                var update_url = '/update_provider/' + id + '/'
                 $('#update-form').attr('action', update_url)
                 $.ajax({
                     type: 'GET',
@@ -315,14 +211,12 @@
                 })
             });
         });
-    </script>
 
-    <script>
         $('.deleteConfirmModalClass').click(function () {
             $('#delete-record').data('value', $(this).data('value'))
             $('#delete-record').click(function () {
                 $.ajax({
-                    url: '/delete_space/' + $(this).data('value') + '/',
+                    url: '/delete_provider/' + $(this).data('value') + '/',
                     type: 'POST',
                     data: {
                         csrfmiddlewaretoken: '{{ csrf_token }}',
@@ -334,6 +228,4 @@
             })
         });
     </script>
-
-
 {% endblock script %}
