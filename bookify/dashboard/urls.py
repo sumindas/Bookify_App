@@ -38,8 +38,8 @@ urlpatterns = [
     path('shops/list/', shop.shop_list, name='dashboard-shop-list'),
     path('shops/view/<int:pk>/', shop.shop_details, name='dashboard-shop-view'),
     path('shops/edit/<int:pk>/', shop.edit_shop, name='dashboard-shop-edit'),
-    path('update_provider/<int:pk>/', shop.update_provider, name='update_provider'),
-    path('delete_provider/<int:pk>/', shop.delete_provider, name='delete_provider'),
-    path('toggle_provider_verification/<int:pk>/', shop.toggle_provider_verification, name='toggle_provider_verification'),
+    path('update_provider/<int:pk>/', shop.update_provider, name='dashboard-update-provider'),
+    path('delete_provider/<int:pk>/', shop.delete_provider, name='dashboard-delete-provider'),
+    path('toggle_provider_verification/<int:pk>/', shop.toggle_provider_verification, name='dashboard-toggle_provider_verification'),
    
 ]

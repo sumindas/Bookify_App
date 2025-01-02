@@ -8,6 +8,7 @@ from dashboard.models import *
 from django.contrib.gis.geos import Point
 from django.template.loader import render_to_string
 from django.core.exceptions import PermissionDenied
+from dashboard.forms import service_provider 
 
 @login_required
 def manage_shops(request):
@@ -47,12 +48,8 @@ def update_provider(request, pk):
     """
     provider = get_object_or_404(ServiceProvider, pk=pk)
     
-    # Check if user has permission to update this provider
-    if not (request.user.is_staff or request.user == provider.user):
-        raise PermissionDenied
-    
     if request.method == 'POST':
-        form = ServiceProviderForm(request.POST, request.FILES, instance=provider)
+        form = service_provider.ServiceProviderForm(request.POST, request.FILES, instance=provider)
         if form.is_valid():
             provider = form.save()
             
@@ -63,58 +60,34 @@ def update_provider(request, pk):
                 })
             
             messages.success(request, 'Service provider updated successfully.')
-            return redirect('provider_detail', pk=provider.pk)
+            return redirect('dashboard-shop-view', pk=provider.pk)
     else:
-        form = ServiceProviderForm(instance=provider)
+        form = service_provider.ServiceProviderForm(instance=provider)
     
     context = {
         'form': form,
         'provider': provider,
     }
     
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        html = render_to_string(
-            template_name="dashboard/includes/forms/provider_form.html",
-            context=context
-        )
-        return HttpResponse(html)
-    
-    return render(request, "dashboard/update_provider.html", context)
+    return render(request, "dashboard/includes/modals/update_in_modal.html", context)
+
+
 
 @login_required
 def delete_provider(request, pk):
-    """
-    View function for soft deleting a service provider
-    """
     if request.method == 'POST':
         provider = get_object_or_404(ServiceProvider, pk=pk)
-        
-        # Check if user has permission to delete this provider
-        if not (request.user.is_staff or request.user == provider.user):
-            raise PermissionDenied
-        
-        # Soft delete
         provider.is_deleted = True
         provider.save()
-        
-        # Also soft delete related services and slots
+            
+        # Delete related records
         Service.objects.filter(provider=provider).update(is_deleted=True)
         ShopSlot.objects.filter(provider=provider).update(is_deleted=True)
         
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({
-                'status': 'success',
-                'message': 'Service provider deleted successfully.'
-            })
-        
-        messages.success(request, 'Service provider deleted successfully.')
-        return redirect('provider_list')  # Redirect to provider list page
-    
-    return JsonResponse({
-        'status': 'error',
-        'message': 'Invalid request method.'
-    })
-
+        messages.success(request,'"Shop Deleted Succesfully')
+        return redirect('dashboard-shop-list')
+    return redirect('dashboard-shop-view',pk=pk) 
+     
 @login_required
 def toggle_provider_verification(request, pk):
     """
